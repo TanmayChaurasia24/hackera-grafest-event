@@ -1,10 +1,11 @@
 
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./contexts/AuthContext";
 
 // Pages
 import LandingPage from "./pages/LandingPage";
@@ -18,31 +19,6 @@ import NavBar from "./components/NavBar";
 
 const queryClient = new QueryClient();
 
-// Protected route component
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, isLoading } = useAuth();
-
-  // If still loading, show nothing (or a loading spinner)
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin h-8 w-8 border-2 border-primary rounded-full border-t-transparent mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // If not authenticated, redirect to landing page
-  if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
-
-  // If authenticated, render the children
-  return <>{children}</>;
-};
-
 const AppContent = () => {
   return (
     <div className="flex flex-col min-h-screen">
@@ -51,28 +27,16 @@ const AppContent = () => {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route 
-            path="/challenges" 
-            element={
-              <ProtectedRoute>
-                <ChallengesPage />
-              </ProtectedRoute>
-            } 
+            path="/challenges"
+            element={<ChallengesPage />}
           />
           <Route 
-            path="/challenges/:id" 
-            element={
-              <ProtectedRoute>
-                <ChallengePage />
-              </ProtectedRoute>
-            } 
+            path="/challenges/:id"
+            element={<ChallengePage />}
           />
           <Route 
-            path="/leaderboard" 
-            element={
-              <ProtectedRoute>
-                <LeaderboardPage />
-              </ProtectedRoute>
-            } 
+            path="/leaderboard"
+            element={<LeaderboardPage />}
           />
           <Route path="*" element={<NotFound />} />
         </Routes>
@@ -96,3 +60,4 @@ const App = () => (
 );
 
 export default App;
+

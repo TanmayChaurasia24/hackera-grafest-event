@@ -1,9 +1,9 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.cdnfonts.com/css/mr-robot'); /* Fan-made font CDN or fallback */
 
 @layer base {
   :root {
@@ -49,8 +49,14 @@
     font-family: 'Share Tech Mono', monospace;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: 'Orbitron', sans-serif;
+  h1, h2, h3, h4, h5, h6, .mrrobot-heading, .logo-type {
+    font-family: 'MrRobot', 'Orbitron', 'Share Tech Mono', monospace !important;
+    font-variant-ligatures: none;
+    letter-spacing: 0.04em;
+  }
+
+  .body-content {
+    font-family: 'Share Tech Mono', 'Roboto Mono', monospace, sans-serif;
   }
 }
 

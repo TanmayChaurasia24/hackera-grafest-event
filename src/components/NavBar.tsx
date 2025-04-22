@@ -37,9 +37,9 @@ const NavBar: React.FC = () => {
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
-          {/* Logo for all screens */}
+          {/* Logo for all screens, use Mr Robot font */}
           <Link to="/" className="flex items-center gap-2">
-            <span className="text-2xl font-bold neon-text-primary text-primary">HACK=ERA</span>
+            <span className="text-2xl font-bold neon-text-primary text-primary logo-type mrrobot-heading">HACK=ERA</span>
           </Link>
         </div>
 
@@ -53,7 +53,7 @@ const NavBar: React.FC = () => {
                 isActive(link.href) 
                   ? 'text-primary neon-text-primary font-bold' 
                   : 'text-muted-foreground'
-              }`}
+              } body-content`}
             >
               <link.icon className="h-4 w-4" />
               {link.name}
@@ -62,7 +62,7 @@ const NavBar: React.FC = () => {
 
           {isAuthenticated ? (
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center gap-2 text-sm body-content">
                 <User className="h-4 w-4" />
                 <span className="text-secondary font-medium">{user?.username}</span>
                 <span className="text-muted-foreground">

@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -21,7 +22,7 @@ const LandingPage: React.FC = () => {
     <div className="min-h-screen flex flex-col">
       <MatrixBackground />
       
-      <main className="flex-1 container mx-auto px-4 py-12 flex flex-col items-center justify-center relative">
+      <main className="flex-1 container mx-auto px-4 py-12 flex flex-col items-center justify-center relative body-content">
         {/* Hero Section */}
         <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
           <div className="space-y-6">
@@ -36,7 +37,7 @@ const LandingPage: React.FC = () => {
             </div>
             
             <div className="space-y-4">
-              <h1 className="text-4xl font-bold leading-tight neon-text-primary text-primary">
+              <h1 className="text-4xl font-bold leading-tight neon-text-primary text-primary mrrobot-heading">
                 THE ULTIMATE CTF CHALLENGE
               </h1>
               
@@ -70,18 +71,18 @@ const LandingPage: React.FC = () => {
               
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
                 <div className="bg-card/50 backdrop-blur p-4 rounded-lg border border-border">
-                  <h3 className="font-semibold text-secondary mb-1">Web Exploitation</h3>
-                  <p className="text-muted-foreground text-sm">Test your skills against vulnerable web applications</p>
+                  <h3 className="font-semibold text-secondary mb-1 mrrobot-heading">Web Exploitation</h3>
+                  <p className="text-muted-foreground text-sm body-content">Test your skills against vulnerable web applications</p>
                 </div>
                 
                 <div className="bg-card/50 backdrop-blur p-4 rounded-lg border border-border">
-                  <h3 className="font-semibold text-secondary mb-1">Cryptography</h3>
-                  <p className="text-muted-foreground text-sm">Crack codes and decipher encrypted messages</p>
+                  <h3 className="font-semibold text-secondary mb-1 mrrobot-heading">Cryptography</h3>
+                  <p className="text-muted-foreground text-sm body-content">Crack codes and decipher encrypted messages</p>
                 </div>
                 
                 <div className="bg-card/50 backdrop-blur p-4 rounded-lg border border-border">
-                  <h3 className="font-semibold text-secondary mb-1">Network Security</h3>
-                  <p className="text-muted-foreground text-sm">Analyze and exploit network vulnerabilities</p>
+                  <h3 className="font-semibold text-secondary mb-1 mrrobot-heading">Network Security</h3>
+                  <p className="text-muted-foreground text-sm body-content">Analyze and exploit network vulnerabilities</p>
                 </div>
               </div>
             </div>
@@ -94,28 +95,28 @@ const LandingPage: React.FC = () => {
         
         {/* Event Information */}
         <div className="mt-20 text-center">
-          <h2 className="text-2xl font-bold mb-4 text-secondary neon-text">Event Details</h2>
+          <h2 className="text-2xl font-bold mb-4 text-secondary neon-text mrrobot-heading">Event Details</h2>
           <div className="flex flex-wrap justify-center gap-6">
             <div className="bg-card/50 backdrop-blur p-6 rounded-lg border border-border">
-              <h3 className="text-xl font-semibold text-primary mb-2">Date</h3>
-              <p className="text-muted-foreground">October 15-16, 2025</p>
+              <h3 className="text-xl font-semibold text-primary mb-2 mrrobot-heading">Date</h3>
+              <p className="text-muted-foreground body-content">October 15-16, 2025</p>
             </div>
             
             <div className="bg-card/50 backdrop-blur p-6 rounded-lg border border-border">
-              <h3 className="text-xl font-semibold text-primary mb-2">Time</h3>
-              <p className="text-muted-foreground">10:00 AM - 5:00 PM</p>
+              <h3 className="text-xl font-semibold text-primary mb-2 mrrobot-heading">Time</h3>
+              <p className="text-muted-foreground body-content">10:00 AM - 5:00 PM</p>
             </div>
             
             <div className="bg-card/50 backdrop-blur p-6 rounded-lg border border-border">
-              <h3 className="text-xl font-semibold text-primary mb-2">Venue</h3>
-              <p className="text-muted-foreground">Graphic Era University, Dehradun</p>
+              <h3 className="text-xl font-semibold text-primary mb-2 mrrobot-heading">Venue</h3>
+              <p className="text-muted-foreground body-content">Graphic Era University, Dehradun</p>
             </div>
           </div>
         </div>
       </main>
       
       <footer className="bg-background border-t border-border py-6">
-        <div className="container mx-auto px-4 text-center text-muted-foreground">
+        <div className="container mx-auto px-4 text-center text-muted-foreground body-content">
           <p>© {new Date().getFullYear()} HACK=ERA CTF Challenge | Powered by Grafest, Graphic Era Deemed University</p>
         </div>
       </footer>
