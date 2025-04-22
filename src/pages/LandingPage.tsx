@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import LoginForm from '@/components/LoginForm';
 import { Button } from '@/components/ui/button';
 import MatrixBackground from '@/components/MatrixBackground';
-
+import Banner from "@/images/HackEra_Banner_updated.jpg"
 const LandingPage: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ const LandingPage: React.FC = () => {
             <div className="inline-block">
               <div className="flex items-center gap-3 mb-4">
                 <img 
-                  src="/lovable-uploads/fd6fab26-25ff-4a10-93b7-559d1e94a6c4.png" 
+                  src={Banner}
                   alt="HACK=ERA" 
                   className="w-full md:max-w-lg"
                 />
