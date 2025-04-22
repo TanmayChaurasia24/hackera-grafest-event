@@ -112,7 +112,7 @@ const LeaderboardPage: React.FC = () => {
       <MatrixBackground />
       <div className="container mx-auto px-4 py-8">
         <header className="mb-10">
-          <h1 className="text-3xl font-bold mb-2 text-primary neon-text-primary">Leaderboard</h1>
+          <h1 className="text-3xl font-bold mb-2 text-white">Leaderboard</h1>
           <p className="text-muted-foreground">
             See how you rank against other participants in the HACK=ERA CTF Challenge.
           </p>

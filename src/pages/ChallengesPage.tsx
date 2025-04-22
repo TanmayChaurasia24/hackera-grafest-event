@@ -127,7 +127,7 @@ const ChallengesPage: React.FC = () => {
       <MatrixBackground />
       <div className="container mx-auto px-4 py-8">
         <header className="mb-10">
-          <h1 className="text-3xl font-bold mb-2 text-primary neon-text-primary">Challenges</h1>
+          <h1 className="text-3xl font-bold mb-2 text-white">Challenges</h1>
           <p className="text-muted-foreground">
             Select a challenge to test your cybersecurity skills. Each challenge contains 
             multiple questions and a dedicated environment.

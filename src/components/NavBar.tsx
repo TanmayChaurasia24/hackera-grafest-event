@@ -48,7 +48,7 @@ const NavBar: React.FC = () => {
               to={link.href}
               className={`flex items-center gap-2 text-sm transition-colors hover:text-primary ${
                 isActive(link.href)
-                  ? "text-primary neon-text-primary font-bold"
+                  ? "text-primary font-bold"
                   : "text-muted-foreground"
               } body-content`}
             >

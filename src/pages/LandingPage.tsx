@@ -37,7 +37,7 @@ const LandingPage: React.FC = () => {
             </div>
             
             <div className="space-y-4">
-              <h1 className="text-4xl font-bold leading-tight neon-text-primary text-primary mrrobot-heading">
+              <h1 className="text-4xl font-bold leading-tight text-primary mrrobot-heading">
                 THE ULTIMATE CTF CHALLENGE
               </h1>
               
@@ -95,7 +95,7 @@ const LandingPage: React.FC = () => {
         
         {/* Event Information */}
         <div className="mt-20 text-center">
-          <h2 className="text-2xl font-bold mb-4 text-secondary neon-text mrrobot-heading">Event Details</h2>
+          <h2 className="text-2xl font-bold mb-4 text-secondary mrrobot-heading">Event Details</h2>
           <div className="flex flex-wrap justify-center gap-6">
             <div className="bg-card/50 backdrop-blur p-6 rounded-lg border border-border">
               <h3 className="text-xl font-semibold text-primary mb-2 mrrobot-heading">Date</h3>
