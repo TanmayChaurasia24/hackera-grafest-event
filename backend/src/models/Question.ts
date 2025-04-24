@@ -6,6 +6,10 @@ const questionSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  roundNumber: {
+    type: Number,
+    required: true
+  },
   problem: {
     type: String,
     required: true,
@@ -13,11 +17,7 @@ const questionSchema = new mongoose.Schema({
   placeholder: {
     type: String,
     required: true,
-  },
-  isDownload: {
-    type: Boolean,
-    default: false,
-  },
+  }
 });
 
 export const Question = mongoose.model("Question", questionSchema);

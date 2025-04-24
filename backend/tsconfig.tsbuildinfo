@@ -1,0 +1,1 @@
+{"root":["./src/server.ts","./src/config/db.ts","./src/models/question.ts","./src/models/solution.ts","./src/models/team.ts","./src/routes/questionroutes.ts","./src/routes/teamroutes.ts"],"version":"5.8.2"}
