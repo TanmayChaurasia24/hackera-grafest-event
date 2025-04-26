@@ -5,10 +5,6 @@ const solutionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  roundNumber: {
-    type: Number,
-    required: true,
-  },
   questionId: {
     type: Number,
     required: true,
