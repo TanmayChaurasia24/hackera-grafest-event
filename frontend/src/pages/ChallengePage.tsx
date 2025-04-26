@@ -1,16 +1,26 @@
-
-import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
-import { useToast } from '@/components/ui/use-toast';
-import { ArrowLeft, Terminal, Shield, Code, Award, Timer, Clock, Server, Key } from 'lucide-react';
-import MatrixBackground from '@/components/MatrixBackground';
+import React, { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  ArrowLeft,
+  Award,
+  Timer,
+  Server,
+  Key,
+} from "lucide-react";
+import MatrixBackground from "@/components/MatrixBackground";
 
 // Challenge types and data
 type Question = {
@@ -18,7 +28,7 @@ type Question = {
   title: string;
   description: string;
   hints: string[];
-  difficulty: 'Easy' | 'Medium' | 'Hard' | 'Extreme';
+  difficulty: "Easy" | "Medium" | "Hard" | "Extreme";
   completed: boolean;
   points: number;
 };
@@ -28,7 +38,7 @@ type ChallengeDetail = {
   title: string;
   description: string;
   category: string;
-  difficulty: 'Easy' | 'Medium' | 'Hard' | 'Extreme';
+  difficulty: "Easy" | "Medium" | "Hard" | "Extreme";
   ipAddress: string;
   port: number;
   questions: Question[];
@@ -37,80 +47,92 @@ type ChallengeDetail = {
 
 // Mock challenge data
 const challengesData: Record<string, ChallengeDetail> = {
-  '1': {
-    id: '1',
-    title: 'Web Exploitation Basics',
-    description: 'This challenge focuses on common web vulnerabilities. You\'ll practice identifying and exploiting cross-site scripting (XSS), SQL injection, and CSRF vulnerabilities. Connect to the provided VM and find the flags!',
-    category: 'Web Security',
-    difficulty: 'Easy',
-    ipAddress: '192.168.1.10',
+  "1": {
+    id: "1",
+    title: "Web Exploitation Basics",
+    description:
+      "This challenge focuses on common web vulnerabilities. You'll practice identifying and exploiting cross-site scripting (XSS), SQL injection, and CSRF vulnerabilities. Connect to the provided VM and find the flags!",
+    category: "Web Security",
+    difficulty: "Easy",
+    ipAddress: "192.168.1.10",
     port: 80,
     questions: [
       {
-        id: '1-1',
-        title: 'Find the XSS vulnerability',
-        description: 'There is a reflected XSS vulnerability in the search function of the application. Craft a payload that will execute JavaScript and retrieve the hidden flag.',
+        id: "1-1",
+        title: "Find the XSS vulnerability",
+        description:
+          "There is a reflected XSS vulnerability in the search function of the application. Craft a payload that will execute JavaScript and retrieve the hidden flag.",
         hints: [
-          'Check input fields that might not be properly sanitized',
-          'The search function doesn\'t escape special characters'
+          "Check input fields that might not be properly sanitized",
+          "The search function doesn't escape special characters",
         ],
-        difficulty: 'Easy',
+        difficulty: "Easy",
         completed: false,
-        points: 20
+        points: 20,
       },
       {
-        id: '1-2',
-        title: 'SQL Injection Challenge',
-        description: 'The login form is vulnerable to SQL injection. Find a way to bypass authentication and access the admin panel without knowing the password.',
+        id: "1-2",
+        title: "SQL Injection Challenge",
+        description:
+          "The login form is vulnerable to SQL injection. Find a way to bypass authentication and access the admin panel without knowing the password.",
         hints: [
-          'Try classic SQL injection patterns',
-          'The query might be something like: SELECT * FROM users WHERE username=\'[input]\' AND password=\'[input]\''
+          "Try classic SQL injection patterns",
+          "The query might be something like: SELECT * FROM users WHERE username='[input]' AND password='[input]'",
         ],
-        difficulty: 'Medium',
+        difficulty: "Medium",
         completed: false,
-        points: 30
+        points: 30,
       },
       {
-        id: '1-3',
-        title: 'CSRF Token Bypass',
-        description: 'The application has CSRF protection, but it\'s implemented incorrectly. Create a proof of concept that can change a user\'s email address without their knowledge.',
+        id: "1-3",
+        title: "CSRF Token Bypass",
+        description:
+          "The application has CSRF protection, but it's implemented incorrectly. Create a proof of concept that can change a user's email address without their knowledge.",
         hints: [
-          'The CSRF token validation has a flaw',
-          'Check how tokens are generated and validated'
+          "The CSRF token validation has a flaw",
+          "Check how tokens are generated and validated",
         ],
-        difficulty: 'Medium',
+        difficulty: "Medium",
         completed: false,
-        points: 30
+        points: 30,
       },
       {
-        id: '1-4',
-        title: 'Hidden Directory Discovery',
-        description: 'There\'s a hidden administration directory that contains sensitive files. Use directory brute forcing to find it and retrieve the flag file.',
+        id: "1-4",
+        title: "Hidden Directory Discovery",
+        description:
+          "There's a hidden administration directory that contains sensitive files. Use directory brute forcing to find it and retrieve the flag file.",
         hints: [
-          'Common admin directory names might be used',
-          'Try tools like dirb or gobuster, or create your own wordlist'
+          "Common admin directory names might be used",
+          "Try tools like dirb or gobuster, or create your own wordlist",
         ],
-        difficulty: 'Easy',
+        difficulty: "Easy",
         completed: false,
-        points: 20
+        points: 20,
       },
       {
-        id: '1-5',
-        title: 'Local File Inclusion',
-        description: 'The website has a local file inclusion vulnerability. Find a way to read the /etc/passwd file from the server.',
+        id: "1-5",
+        title: "Local File Inclusion",
+        description:
+          "The website has a local file inclusion vulnerability. Find a way to read the /etc/passwd file from the server.",
         hints: [
-          'Look for parameters that might include files',
-          'Try path traversal techniques with ../'
+          "Look for parameters that might include files",
+          "Try path traversal techniques with ../",
         ],
-        difficulty: 'Hard',
+        difficulty: "Hard",
         completed: false,
-        points: 40
-      }
+        points: 40,
+      },
     ],
     resources: [
-      { title: 'OWASP XSS Prevention Cheat Sheet', url: 'https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html' },
-      { title: 'SQL Injection Cheat Sheet', url: 'https://portswigger.net/web-security/sql-injection/cheat-sheet' }
-    ]
+      {
+        title: "OWASP XSS Prevention Cheat Sheet",
+        url: "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html",
+      },
+      {
+        title: "SQL Injection Cheat Sheet",
+        url: "https://portswigger.net/web-security/sql-injection/cheat-sheet",
+      },
+    ],
   },
   // More challenges would be defined here
 };
@@ -119,7 +141,6 @@ const ChallengePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [challenge, setChallenge] = useState<ChallengeDetail | null>(null);
   const [loading, setLoading] = useState(true);
-  const [currentTab, setCurrentTab] = useState('overview');
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const { toast } = useToast();
 
@@ -131,8 +152,8 @@ const ChallengePage: React.FC = () => {
         setChallenge(challengesData[id]);
         // Initialize answers object
         const initialAnswers: Record<string, string> = {};
-        challengesData[id].questions.forEach(q => {
-          initialAnswers[q.id] = '';
+        challengesData[id].questions.forEach((q) => {
+          initialAnswers[q.id] = "";
         });
         setAnswers(initialAnswers);
       }
@@ -141,7 +162,7 @@ const ChallengePage: React.FC = () => {
   }, [id]);
 
   const handleAnswerChange = (questionId: string, value: string) => {
-    setAnswers(prev => ({
+    setAnswers((prev) => ({
       ...prev,
       [questionId]: value,
     }));
@@ -168,10 +189,10 @@ const ChallengePage: React.FC = () => {
         description: `You've earned ${question.points} points!`,
         variant: "default",
       });
-      
+
       // Update the completed status of the question
       if (challenge) {
-        const updatedQuestions = challenge.questions.map(q => 
+        const updatedQuestions = challenge.questions.map((q) =>
           q.id === question.id ? { ...q, completed: true } : q
         );
         setChallenge({ ...challenge, questions: updatedQuestions });
@@ -185,9 +206,9 @@ const ChallengePage: React.FC = () => {
     }
 
     // Clear the answer field
-    setAnswers(prev => ({
+    setAnswers((prev) => ({
       ...prev,
-      [question.id]: '',
+      [question.id]: "",
     }));
   };
 
@@ -207,7 +228,9 @@ const ChallengePage: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-2">Challenge Not Found</h2>
-          <p className="text-muted-foreground mb-4">The challenge you're looking for doesn't exist.</p>
+          <p className="text-muted-foreground mb-4">
+            The challenge you're looking for doesn't exist.
+          </p>
           <Button asChild>
             <Link to="/challenges">Back to Challenges</Link>
           </Button>
@@ -217,7 +240,7 @@ const ChallengePage: React.FC = () => {
   }
 
   // Calculate progress
-  const completedCount = challenge.questions.filter(q => q.completed).length;
+  const completedCount = challenge.questions.filter((q) => q.completed).length;
   const progress = (completedCount / challenge.questions.length) * 100;
 
   return (
@@ -225,29 +248,43 @@ const ChallengePage: React.FC = () => {
       <MatrixBackground />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-6">
-          <Link to="/challenges" className="flex items-center text-muted-foreground hover:text-primary transition-colors mb-4">
+          <Link
+            to="/challenges"
+            className="flex items-center text-muted-foreground hover:text-primary transition-colors mb-4"
+          >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Challenges
           </Link>
-          
+
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-primary neon-text-primary mb-2">{challenge.title}</h1>
+              <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">
+                {challenge.title}
+              </h1>
               <div className="flex flex-wrap items-center gap-2 mb-2">
-                <Badge variant="outline" className="bg-secondary/20 text-secondary">
+                <Badge
+                  variant="outline"
+                  className="bg-secondary/20 text-secondary"
+                >
                   {challenge.category}
                 </Badge>
-                <Badge variant="outline" className={
-                  challenge.difficulty === 'Easy' ? 'bg-green-500/20 text-green-500' :
-                  challenge.difficulty === 'Medium' ? 'bg-blue-500/20 text-blue-500' :
-                  challenge.difficulty === 'Hard' ? 'bg-orange-500/20 text-orange-500' :
-                  'bg-red-500/20 text-red-500'
-                }>
+                <Badge
+                  variant="outline"
+                  className={
+                    challenge.difficulty === "Easy"
+                      ? "bg-green-500/20 text-green-500"
+                      : challenge.difficulty === "Medium"
+                      ? "bg-blue-500/20 text-blue-500"
+                      : challenge.difficulty === "Hard"
+                      ? "bg-orange-500/20 text-orange-500"
+                      : "bg-red-500/20 text-red-500"
+                  }
+                >
                   {challenge.difficulty}
                 </Badge>
               </div>
             </div>
-            
+
             <div className="flex flex-col xs:flex-row gap-2 items-start xs:items-center">
               <div className="flex items-center bg-muted/50 rounded-md px-3 py-1.5 text-sm">
                 <Server className="h-4 w-4 mr-2 text-secondary" />
@@ -255,17 +292,18 @@ const ChallengePage: React.FC = () => {
                   IP: {challenge.ipAddress}:{challenge.port}
                 </span>
               </div>
-              
+
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <div className="flex items-center">
                   <Award className="h-4 w-4 mr-1 text-primary" />
                   <span>
-                    {challenge.questions.reduce((sum, q) => sum + q.points, 0)} pts
+                    {challenge.questions.reduce((sum, q) => sum + q.points, 0)}{" "}
+                    pts
                   </span>
                 </div>
-                
+
                 <Separator orientation="vertical" className="h-4" />
-                
+
                 <div className="flex items-center">
                   <Timer className="h-4 w-4 mr-1 text-primary" />
                   <span>~60 min</span>
@@ -273,210 +311,159 @@ const ChallengePage: React.FC = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="mt-4 space-y-2">
             <div className="flex justify-between text-xs">
               <span className="text-muted-foreground">
-                Progress: {completedCount} of {challenge.questions.length} completed
+                Progress: {completedCount} of {challenge.questions.length}{" "}
+                completed
               </span>
-              <span className="text-secondary font-medium">{progress.toFixed(0)}%</span>
+              <span className="text-secondary font-medium">
+                {progress.toFixed(0)}%
+              </span>
             </div>
             <Progress value={progress} className="h-1.5 bg-muted" />
           </div>
         </div>
+
+        {/* overview */}
+        <div className="space-y-6 mb-10">
+          <h1 className="text-4xl font-semibold leading-none text-secondary tracking-wide">OVERVIEW</h1>
+          <div className="lg:col-span-2 space-y-6">
+            <Card className="border border-border bg-card/70 backdrop-blur">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xl">Description</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground">{challenge.description}</p>
+              </CardContent>
+            </Card>
+
+            <Card className="border border-border bg-card/70 backdrop-blur">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xl">Instructions</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <h3 className="font-medium text-secondary">
+                    Connection Details
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    Connect to the virtual machine at{" "}
+                    <span className="font-mono bg-muted px-1 rounded">
+                      {challenge.ipAddress}
+                    </span>{" "}
+                    on port{" "}
+                    <span className="font-mono bg-muted px-1 rounded">
+                      {challenge.port}
+                    </span>
+                    . You'll need to use tools such as web browsers, Burp Suite,
+                    or other security tools to solve the challenges.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="font-medium text-secondary">How to Submit</h3>
+                  <p className="text-muted-foreground text-sm">
+                    For each question, find the flag in the format{" "}
+                    <span className="font-mono bg-muted px-1 rounded">
+                      HACKERA{"{flag_value}"}
+                    </span>
+                    . Submit your answer in the corresponding question field in
+                    the Questions tab.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <h3 className="font-medium text-secondary">Points</h3>
+                  <p className="text-muted-foreground text-sm">
+                    Each question is worth different points based on difficulty.
+                    Successfully solving a question adds points to your score on
+                    the leaderboard.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
         
-        <Tabs defaultValue="overview" value={currentTab} onValueChange={setCurrentTab} className="w-full">
-          <TabsList className="grid grid-cols-2 w-full max-w-md mb-6">
-            <TabsTrigger value="overview" className="flex items-center gap-2">
-              <Shield className="h-4 w-4" />
-              <span>Overview</span>
-            </TabsTrigger>
-            <TabsTrigger value="questions" className="flex items-center gap-2">
-              <Terminal className="h-4 w-4" />
-              <span>Questions</span>
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="overview">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 space-y-6">
-                <Card className="border border-border bg-card/70 backdrop-blur">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-xl">Description</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">{challenge.description}</p>
-                  </CardContent>
-                </Card>
-                
-                <Card className="border border-border bg-card/70 backdrop-blur">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-xl">Instructions</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <h3 className="font-medium text-secondary">Connection Details</h3>
-                      <p className="text-muted-foreground text-sm">
-                        Connect to the virtual machine at <span className="font-mono bg-muted px-1 rounded">{challenge.ipAddress}</span> on port <span className="font-mono bg-muted px-1 rounded">{challenge.port}</span>. 
-                        You'll need to use tools such as web browsers, Burp Suite, or other security tools to solve the challenges.
-                      </p>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <h3 className="font-medium text-secondary">How to Submit</h3>
-                      <p className="text-muted-foreground text-sm">
-                        For each question, find the flag in the format <span className="font-mono bg-muted px-1 rounded">HACKERA{'{flag_value}'}</span>. 
-                        Submit your answer in the corresponding question field in the Questions tab.
-                      </p>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <h3 className="font-medium text-secondary">Points</h3>
-                      <p className="text-muted-foreground text-sm">
-                        Each question is worth different points based on difficulty. Successfully solving a question adds 
-                        points to your score on the leaderboard.
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-              
-              <div className="space-y-6">
-                <Card className="border border-border bg-card/70 backdrop-blur">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-xl">Resources</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-2">
-                      {challenge.resources.map((resource, index) => (
-                        <li key={index}>
-                          <a 
-                            href={resource.url} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-secondary hover:text-primary flex items-center gap-2"
-                          >
-                            <Code className="h-4 w-4" />
-                            <span>{resource.title}</span>
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-                
-                <Card className="border border-border bg-card/70 backdrop-blur">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="text-xl">Questions</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-3">
-                      {challenge.questions.map((question, index) => (
-                        <li key={question.id} className="flex items-center gap-2">
-                          <div 
-                            className={`h-5 w-5 rounded-full flex items-center justify-center text-xs ${
-                              question.completed 
-                                ? 'bg-primary/20 text-primary border border-primary/50' 
-                                : 'bg-muted text-muted-foreground border border-border'
-                            }`}
-                          >
-                            {index + 1}
-                          </div>
-                          <span 
-                            className={question.completed ? 'text-primary' : 'text-muted-foreground'}
-                          >
-                            {question.title}
-                          </span>
-                          {question.completed && (
-                            <Badge variant="outline" className="ml-auto bg-primary/20 text-primary">
-                              Completed
-                            </Badge>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                    
-                    <Button 
-                      variant="default" 
-                      className="w-full mt-4 bg-secondary hover:bg-secondary/80 text-secondary-foreground"
-                      onClick={() => setCurrentTab('questions')}
-                    >
-                      <Terminal className="h-4 w-4 mr-2" />
-                      Go to Questions
-                    </Button>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="questions">
-            <div className="space-y-6">
-              {challenge.questions.map((question) => (
-                <Card key={question.id} className="border border-border bg-card/70 backdrop-blur overflow-hidden">
-                  <CardHeader className="pb-2">
-                    <div className="flex justify-between items-start mb-2">
-                      <Badge 
-                        variant="outline" 
-                        className={
-                          question.difficulty === 'Easy' ? 'bg-green-500/20 text-green-500' :
-                          question.difficulty === 'Medium' ? 'bg-blue-500/20 text-blue-500' :
-                          question.difficulty === 'Hard' ? 'bg-orange-500/20 text-orange-500' :
-                          'bg-red-500/20 text-red-500'
-                        }
-                      >
-                        {question.difficulty}
-                      </Badge>
-                      <Badge variant="secondary">{question.points} pts</Badge>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <Key className="h-5 w-5 mt-0.5 text-secondary" />
-                      <div>
-                        <CardTitle className="text-lg">{question.title}</CardTitle>
-                        <p className="text-muted-foreground text-sm mt-1">
-                          {question.description}
-                        </p>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent>
-                    <div className="bg-muted/50 rounded-md p-3 my-2">
-                      <h4 className="text-sm font-medium text-secondary mb-2">Hints:</h4>
-                      <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
-                        {question.hints.map((hint, index) => (
-                          <li key={index}>{hint}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </CardContent>
-                  
-                  <CardFooter className="border-t border-border pt-4 flex flex-col sm:flex-row gap-3">
-                    <Input
-                      type="text"
-                      placeholder="Enter your answer (e.g., HACKERA{flag})"
-                      value={answers[question.id] || ''}
-                      onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-                      className="font-mono bg-background/80 border-border"
-                      disabled={question.completed}
-                    />
-                    <Button 
-                      variant={question.completed ? "outline" : "default"}
-                      className={question.completed 
-                        ? "border-primary text-primary hover:bg-primary/20 whitespace-nowrap" 
-                        : "bg-primary hover:bg-primary/90 text-primary-foreground whitespace-nowrap"
-                      }
-                      onClick={() => handleSubmitAnswer(question)}
-                      disabled={question.completed}
-                    >
-                      {question.completed ? "Completed" : "Submit Answer"}
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
+        {/* questions */}
+        <div className="space-y-6">
+          <h1 className="text-4xl font-semibold leading-none text-secondary tracking-wide">QUESTIONS</h1>
+          {challenge.questions.map((question) => (
+            <Card
+              key={question.id}
+              className="border border-border bg-card/70 backdrop-blur overflow-hidden"
+            >
+              <CardHeader className="pb-2">
+                <div className="flex justify-between items-start mb-2">
+                  <Badge
+                    variant="outline"
+                    className={
+                      question.difficulty === "Easy"
+                        ? "bg-green-500/20 text-green-500"
+                        : question.difficulty === "Medium"
+                        ? "bg-blue-500/20 text-blue-500"
+                        : question.difficulty === "Hard"
+                        ? "bg-orange-500/20 text-orange-500"
+                        : "bg-red-500/20 text-red-500"
+                    }
+                  >
+                    {question.difficulty}
+                  </Badge>
+                  <Badge variant="secondary">{question.points} pts</Badge>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Key className="h-5 w-5 mt-0.5 text-secondary" />
+                  <div>
+                    <CardTitle className="text-lg">{question.title}</CardTitle>
+                    <p className="text-muted-foreground text-sm mt-1">
+                      {question.description}
+                    </p>
+                  </div>
+                </div>
+              </CardHeader>
+
+              <CardContent>
+                <div className="bg-muted/50 rounded-md p-3 my-2">
+                  <h4 className="text-sm font-medium text-secondary mb-2">
+                    Hints:
+                  </h4>
+                  <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+                    {question.hints.map((hint, index) => (
+                      <li key={index}>{hint}</li>
+                    ))}
+                  </ul>
+                </div>
+              </CardContent>
+
+              <CardFooter className="border-t border-border pt-4 flex flex-col sm:flex-row gap-3">
+                <Input
+                  type="text"
+                  placeholder="Enter your answer (e.g., HACKERA{flag})"
+                  value={answers[question.id] || ""}
+                  onChange={(e) =>
+                    handleAnswerChange(question.id, e.target.value)
+                  }
+                  className="font-mono bg-background/80 border-border"
+                  disabled={question.completed}
+                />
+                <Button
+                  variant={question.completed ? "outline" : "default"}
+                  className={
+                    question.completed
+                      ? "border-primary text-primary hover:bg-primary/20 whitespace-nowrap"
+                      : "bg-primary hover:bg-primary/90 text-primary-foreground whitespace-nowrap"
+                  }
+                  onClick={() => handleSubmitAnswer(question)}
+                  disabled={question.completed}
+                >
+                  {question.completed ? "Completed" : "Submit Answer"}
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
       </div>
     </div>
   );
