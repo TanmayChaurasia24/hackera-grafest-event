@@ -6,9 +6,9 @@ import { Solution } from "../models/Solution";
 const router = express.Router();
 
 // Get questions for a specific team based on their IP address
-router.get("/team/:teamId", async (req, res) => {
+router.get("/team/:teamId/round/:roundNumber", async (req, res) => {
   try {
-    const { teamId } = req.params;
+    const { teamId, roundNumber } = req.params;
 
     const team = await Team.findById(teamId);
     if (!team) {
@@ -16,7 +16,7 @@ router.get("/team/:teamId", async (req, res) => {
     }
 
     // Get questions (in a real scenario, you might filter questions based on IP)
-    const questions = await Question.find();
+    const questions = await Question.find({roundNumber: parseInt(roundNumber)});
 
     res.json(questions);
   } catch (error) {
@@ -56,5 +56,18 @@ router.post("/submit", async (req, res) => {
     res.status(500).json({ message: "Error submitting solution", error });
   }
 });
+
+
+// Get team points
+router.get("/points", async(req,res)=>{
+  try {
+    const teams = await Team.find({}, "teamId points")
+      .sort({ points: -1 }); // Sort by highest points
+
+    res.json(teams);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching team points", error });
+  }
+})
 
 export default router;

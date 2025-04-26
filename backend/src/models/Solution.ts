@@ -2,14 +2,14 @@ import mongoose from "mongoose";
 
 const solutionSchema = new mongoose.Schema({
   teamId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Team",
+    type: String,
     required: true,
+    unique: true,
   },
   questionId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Question",
+    type: Number,
     required: true,
+    unique: true,
   },
   solution: {
     type: String,
