@@ -7,9 +7,9 @@ import {authenticateToken} from "../middlewares/auth"
 const router = express.Router();
 
 // Get questions for a specific team based on their IP address
-router.get("/team/:teamId/day/:day/round/:roundNumber", authenticateToken, async (req, res) => {
+router.get("/team/:teamId/day/:day/round/:round", authenticateToken, async (req, res) => {
   try {
-    const { teamId, day, roundNumber } = req.params;
+    const { teamId, day, round } = req.params;
 
     const team = await Team.findById(teamId);
     if (!team) {
@@ -18,7 +18,7 @@ router.get("/team/:teamId/day/:day/round/:roundNumber", authenticateToken, async
 
     const questions = await Question.find({
       day: parseInt(day),
-      round: parseInt(roundNumber),
+      round: parseInt(round),
     });
 
     res.json(questions);
@@ -31,7 +31,7 @@ router.get("/team/:teamId/day/:day/round/:roundNumber", authenticateToken, async
 // Submit a solution
 router.post("/submit", authenticateToken, async (req, res) => {
   try {
-    const { teamId, questionId, solution,ipAddress } = req.body;
+    const { teamId, questionId, solution, ipAddress } = req.body;
 
     // Validate team and question exist
     const team = await Team.findById(teamId);

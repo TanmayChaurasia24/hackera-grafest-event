@@ -9,7 +9,7 @@ const solutionSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  ipaddress: {
+  ipAddress: {
     type: String,
     required: true,
   },
