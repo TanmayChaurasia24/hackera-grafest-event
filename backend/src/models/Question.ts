@@ -1,14 +1,18 @@
 import mongoose from "mongoose";
 
 const questionSchema = new mongoose.Schema({
-  questionId: {
+  day: {
     type: Number,
     required: true,
-    unique: true,
   },
-  roundNumber: {
+  round: {
     type: Number,
-    required: true
+    required: true,
+  },
+  questionId: {
+    type: String,
+    required: true,
+    unique: true,
   },
   problem: {
     type: String,
@@ -16,8 +20,8 @@ const questionSchema = new mongoose.Schema({
   },
   placeholder: {
     type: String,
-    required: true,
-  }
+    default: "",
+  },
 });
 
 export const Question = mongoose.model("Question", questionSchema);

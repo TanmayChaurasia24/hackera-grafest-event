@@ -10,11 +10,6 @@ const teamSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  ipaddress: {
-    type: String,
-    required: true,
-    unique: true,
-  },
   points: {
     type: Number,
     default: 0,

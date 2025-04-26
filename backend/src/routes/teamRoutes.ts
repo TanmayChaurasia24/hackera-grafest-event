@@ -1,6 +1,7 @@
 import express from "express";
 import { Team } from "../models/Team";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const router = express.Router();
 
@@ -48,7 +49,18 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    res.json({ message: "Login successful", teamId: team._id });
+    // Generate JWT token for session management
+    const token = jwt.sign(
+      { teamId: team._id, teamName: team.teamId },
+      process.env.JWT_SECRET || "secret",
+      { expiresIn: "6h" }
+    );
+
+    res.json({
+      message: "Login successful",
+      teamId: team._id,
+      token,
+    });
   } catch (error) {
     res.status(500).json({ message: "Error logging in", error });
   }

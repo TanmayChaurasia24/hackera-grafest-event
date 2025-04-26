@@ -2,21 +2,24 @@ import express from "express";
 import { Question } from "../models/Question";
 import { Team } from "../models/Team";
 import { Solution } from "../models/Solution";
+import {authenticateToken} from "../middlewares/auth"
 
 const router = express.Router();
 
 // Get questions for a specific team based on their IP address
-router.get("/team/:teamId/round/:roundNumber", async (req, res) => {
+router.get("/team/:teamId/day/:day/round/:roundNumber", authenticateToken, async (req, res) => {
   try {
-    const { teamId, roundNumber } = req.params;
+    const { teamId, day, roundNumber } = req.params;
 
     const team = await Team.findById(teamId);
     if (!team) {
       return res.status(404).json({ message: "Team not found" });
     }
 
-    // Get questions (in a real scenario, you might filter questions based on IP)
-    const questions = await Question.find({roundNumber: parseInt(roundNumber)});
+    const questions = await Question.find({
+      day: parseInt(day),
+      round: parseInt(roundNumber),
+    });
 
     res.json(questions);
   } catch (error) {
@@ -24,10 +27,11 @@ router.get("/team/:teamId/round/:roundNumber", async (req, res) => {
   }
 });
 
+
 // Submit a solution
-router.post("/submit", async (req, res) => {
+router.post("/submit", authenticateToken, async (req, res) => {
   try {
-    const { teamId, questionId, solution } = req.body;
+    const { teamId, questionId, solution,ipAddress } = req.body;
 
     // Validate team and question exist
     const team = await Team.findById(teamId);
@@ -38,10 +42,10 @@ router.post("/submit", async (req, res) => {
     }
 
     // Check for existing solution
-    const existingSolution = await Solution.findOne({ teamId, questionId });
+    const existingSolution = await Solution.findOne({ teamId, questionId, ipAddress });
 
     // If solution was previously correct, don't process again
-    if (existingSolution && existingSolution.status === "correct") {
+    if (existingSolution?.status === "correct") {
       return res
         .status(400)
         .json({ message: "Solution already submitted and correct" });
