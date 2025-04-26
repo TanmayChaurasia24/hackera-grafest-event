@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Menu, Lock, Trophy, LogOut, User } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import logo from "@/images/landing_page_logo.png";
+import logo from "@/images/hackera_logo.png";
 
 const NavBar: React.FC = () => {
   const { isAuthenticated, user, logout } = useAuth();
