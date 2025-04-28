@@ -20,7 +20,7 @@ const ChallengesPage: React.FC = () => {
   }, []);
   
   // Combine both day1 and day2 challenges
-  const allChallenges = [...day1_challanges, ...day2_challanges];
+  const allChallenges = [...day1_challanges];
 
   return (
     <div className="min-h-screen">

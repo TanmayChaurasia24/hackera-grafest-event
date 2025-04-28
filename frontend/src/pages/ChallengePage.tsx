@@ -256,51 +256,30 @@ const ChallengePage: React.FC = () => {
         <div className="space-y-6 mb-10">
           <h1 className="text-4xl font-semibold leading-none text-secondary tracking-wide">OVERVIEW</h1>
           <div className="lg:col-span-2 space-y-6">
+          <Card className="border border-border bg-card/70 backdrop-blur">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xl">{challenge.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <Badge variant="secondary">{challenge.points} pts</Badge>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <challenge.icon className="h-5 w-5 text-secondary" />
+                    <CardTitle className="text-lg">{challenge.description}</CardTitle>
+                  </div>
+              </CardContent>
+            </Card>
             <Card className="border border-border bg-card/70 backdrop-blur">
               <CardHeader className="pb-2">
-                <CardTitle className="text-xl">Description</CardTitle>
+                <CardTitle className="text-xl">Problem Statement</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">{challenge.problem_statement}</p>
               </CardContent>
             </Card>
 
-            <Card className="border border-border bg-card/70 backdrop-blur">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xl">Instructions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <h3 className="font-medium text-secondary">Challenge Environment</h3>
-                  <div className="flex items-center gap-2 bg-muted/50 p-3 rounded-md">
-                    <Server className="h-5 w-5 text-secondary" />
-                    <div className="font-mono text-sm">
-                      Target IP: <span className="text-primary">10.10.{Math.floor(Math.random() * 255)}.{Math.floor(Math.random() * 255)}</span>
-                    </div>
-                  </div>
-                </div>
 
-                <div className="space-y-2">
-                  <h3 className="font-medium text-secondary">How to Submit</h3>
-                  <p className="text-muted-foreground text-sm">
-                    For each question, find the flag in the format{" "}
-                    <span className="font-mono bg-muted px-1 rounded">
-                      HACKERA{"{flag_value}"}
-                    </span>
-                    . Submit your answer in the corresponding question field.
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className="font-medium text-secondary">Points</h3>
-                  <p className="text-muted-foreground text-sm">
-                    Each question is worth different points based on difficulty.
-                    Successfully solving a question adds points to your score on
-                    the leaderboard.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
         
