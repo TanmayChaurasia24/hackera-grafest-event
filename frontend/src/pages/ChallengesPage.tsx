@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import MatrixBackground from '@/components/MatrixBackground';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { day1_challanges } from '@/day1_challanges';
-
+import { day2_challanges } from '@/day2_challanges';
 
 const ChallengesPage: React.FC = () => {
   const { toast } = useToast();
@@ -18,6 +18,9 @@ const ChallengesPage: React.FC = () => {
       description: "Select a challenge to begin your hacking journey.",
     });
   }, []);
+  
+  // Combine both day1 and day2 challenges
+  const allChallenges = [...day1_challanges, ...day2_challanges];
 
   return (
     <div className="min-h-screen">
@@ -32,7 +35,7 @@ const ChallengesPage: React.FC = () => {
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {day1_challanges.map((challenge) => (
+          {allChallenges.map((challenge) => (
             <Link to={`/challenges/${challenge.id}`} key={challenge.id}>
               <Card className="h-full border border-border hover:border-secondary transition-all duration-300 hover:shadow-lg hover:shadow-secondary/10 bg-card/70 backdrop-blur-md overflow-hidden group">
                 <CardHeader className="pb-2">

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
@@ -12,7 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import {
   ArrowLeft,
   Award,
@@ -22,16 +23,16 @@ import {
 } from "lucide-react";
 import MatrixBackground from "@/components/MatrixBackground";
 import { day1_challanges } from "@/day1_challanges";
+import { day2_challanges } from "@/day2_challanges";
+import { useQuery } from "@tanstack/react-query";
 
-// Challenge types and data
+// Define Question type for the backend response
 type Question = {
-  id: string;
-  title: string;
-  description: string;
-  hints: string[];
-  difficulty: "Easy" | "Medium" | "Hard" | "Extreme";
-  completed: boolean;
-  points: number;
+  _id: string;
+  questionId: number;
+  problem: string;
+  placeholder: string;
+  roundNumber: number;
 };
 
 type ChallengeDetail = {
@@ -43,98 +44,6 @@ type ChallengeDetail = {
   icon: React.ElementType;
 };
 
-// // Mock challenge data
-// const challengesData: Record<string, ChallengeDetail> = {
-//   "1": {
-//     id: "1",
-//     title: "Web Exploitation Basics",
-//     description:
-//       "This challenge focuses on common web vulnerabilities. You'll practice identifying and exploiting cross-site scripting (XSS), SQL injection, and CSRF vulnerabilities. Connect to the provided VM and find the flags!",
-//     category: "Web Security",
-//     difficulty: "Easy",
-//     ipAddress: "192.168.1.10",
-//     port: 80,
-//     questions: [
-//       {
-//         id: "1-1",
-//         title: "Find the XSS vulnerability",
-//         description:
-//           "There is a reflected XSS vulnerability in the search function of the application. Craft a payload that will execute JavaScript and retrieve the hidden flag.",
-//         hints: [
-//           "Check input fields that might not be properly sanitized",
-//           "The search function doesn't escape special characters",
-//         ],
-//         difficulty: "Easy",
-//         completed: false,
-//         points: 20,
-//       },
-//       {
-//         id: "1-2",
-//         title: "SQL Injection Challenge",
-//         description:
-//           "The login form is vulnerable to SQL injection. Find a way to bypass authentication and access the admin panel without knowing the password.",
-//         hints: [
-//           "Try classic SQL injection patterns",
-//           "The query might be something like: SELECT * FROM users WHERE username='[input]' AND password='[input]'",
-//         ],
-//         difficulty: "Medium",
-//         completed: false,
-//         points: 30,
-//       },
-//       {
-//         id: "1-3",
-//         title: "CSRF Token Bypass",
-//         description:
-//           "The application has CSRF protection, but it's implemented incorrectly. Create a proof of concept that can change a user's email address without their knowledge.",
-//         hints: [
-//           "The CSRF token validation has a flaw",
-//           "Check how tokens are generated and validated",
-//         ],
-//         difficulty: "Medium",
-//         completed: false,
-//         points: 30,
-//       },
-//       {
-//         id: "1-4",
-//         title: "Hidden Directory Discovery",
-//         description:
-//           "There's a hidden administration directory that contains sensitive files. Use directory brute forcing to find it and retrieve the flag file.",
-//         hints: [
-//           "Common admin directory names might be used",
-//           "Try tools like dirb or gobuster, or create your own wordlist",
-//         ],
-//         difficulty: "Easy",
-//         completed: false,
-//         points: 20,
-//       },
-//       {
-//         id: "1-5",
-//         title: "Local File Inclusion",
-//         description:
-//           "The website has a local file inclusion vulnerability. Find a way to read the /etc/passwd file from the server.",
-//         hints: [
-//           "Look for parameters that might include files",
-//           "Try path traversal techniques with ../",
-//         ],
-//         difficulty: "Hard",
-//         completed: false,
-//         points: 40,
-//       },
-//     ],
-//     resources: [
-//       {
-//         title: "OWASP XSS Prevention Cheat Sheet",
-//         url: "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html",
-//       },
-//       {
-//         title: "SQL Injection Cheat Sheet",
-//         url: "https://portswigger.net/web-security/sql-injection/cheat-sheet",
-//       },
-//     ],
-//   },
-//   // More challenges would be defined here
-// };
-
 const ChallengePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [challenge, setChallenge] = useState<ChallengeDetail | null>(null);
@@ -142,18 +51,52 @@ const ChallengePage: React.FC = () => {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const { toast } = useToast();
 
+  // Simulate team ID for now - in a real app this would come from auth context
+  const teamId = "team123";
+
+  // Use React Query to fetch questions from the backend
+  const { data: questions, isLoading: questionsLoading } = useQuery({
+    queryKey: ["questions", id],
+    queryFn: async () => {
+      // Determine which round number this challenge belongs to
+      // This is just a simple example - in a real app, you'd have a more sophisticated way to map challenges to rounds
+      const roundNumber = parseInt(id || "1", 10) <= 3 ? 1 : 2;
+      
+      try {
+        // This would be replaced with your actual API endpoint
+        // For testing, we're mocking the response
+        console.log(`Fetching questions for round ${roundNumber}`);
+        
+        // This is where you would make the actual API call
+        // const response = await fetch(`/api/questions/team/${teamId}/round/${roundNumber}`);
+        // const data = await response.json();
+        // return data;
+        
+        // For testing, return mock questions
+        return mockQuestions(roundNumber);
+      } catch (error) {
+        console.error("Error fetching questions:", error);
+        throw new Error("Failed to fetch questions");
+      }
+    },
+    enabled: !!id, // Only run query if id is available
+  });
+
   useEffect(() => {
-    // Simulate API call to fetch challenge details
+    // Find the challenge from both day1 and day2 challenges
     setLoading(true);
     setTimeout(() => {
-      if (id && day1_challanges[id]) {
-        setChallenge(day1_challanges[id]);
-        // Initialize answers object
-        // const initialAnswers: Record<string, string> = {};
-        // day1_challanges[id].questions.forEach((q) => {
-        //   initialAnswers[q.id] = "";
-        // });
-        // setAnswers(initialAnswers);
+      if (id) {
+        // Look for the challenge in both day1 and day2 challenges
+        const allChallenges = [...day1_challanges, ...day2_challanges];
+        const foundChallenge = allChallenges.find(c => c.id === id);
+        
+        if (foundChallenge) {
+          setChallenge(foundChallenge);
+          // Initialize answers object
+          const initialAnswers: Record<string, string> = {};
+          setAnswers(initialAnswers);
+        }
       }
       setLoading(false);
     }, 500);
@@ -166,9 +109,9 @@ const ChallengePage: React.FC = () => {
     }));
   };
 
-  const handleSubmitAnswer = (question: Question) => {
-    const answer = answers[question.id];
-    if (!answer.trim()) {
+  const handleSubmitAnswer = async (question: Question) => {
+    const answer = answers[question._id];
+    if (!answer?.trim()) {
       toast({
         title: "Error",
         description: "Please enter an answer before submitting",
@@ -177,28 +120,35 @@ const ChallengePage: React.FC = () => {
       return;
     }
 
-    // In a real application, you would validate the answer against the correct one
-    // For this demo, let's simulate a 30% chance of correct answer
-    const isCorrect = Math.random() > 0.7;
+    try {
+      // In a real app, you would submit to your backend
+      // const response = await fetch('/api/questions/submit', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ teamId, questionId: question._id, solution: answer }),
+      // });
+      // const data = await response.json();
+      
+      // Simulate response - in a real app this would come from the backend
+      const isCorrect = Math.random() > 0.7;
 
-    if (isCorrect) {
+      if (isCorrect) {
+        toast({
+          title: "Correct!",
+          description: `You've earned points for this question!`,
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Incorrect",
+          description: "Try again! Check your answer carefully.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
       toast({
-        title: "Correct!",
-        description: `You've earned ${question.points} points!`,
-        variant: "default",
-      });
-
-      // Update the completed status of the question
-      // if (challenge) {
-      //   const updatedQuestions = challenge.questions.map((q) =>
-      //     q.id === question.id ? { ...q, completed: true } : q
-      //   );
-      //   setChallenge({ ...challenge, questions: updatedQuestions });
-      // }
-    } else {
-      toast({
-        title: "Incorrect",
-        description: "Try again! Check your answer carefully.",
+        title: "Error",
+        description: "Failed to submit answer. Please try again.",
         variant: "destructive",
       });
     }
@@ -206,11 +156,38 @@ const ChallengePage: React.FC = () => {
     // Clear the answer field
     setAnswers((prev) => ({
       ...prev,
-      [question.id]: "",
+      [question._id]: "",
     }));
   };
 
-  if (loading) {
+  // Mock function to generate sample questions for testing
+  const mockQuestions = (roundNumber: number): Question[] => {
+    return [
+      {
+        _id: `q1-round${roundNumber}`,
+        questionId: 1,
+        problem: "Discover the hidden flag in the source code of the application.",
+        placeholder: "Enter flag (e.g., HACKERA{flag})",
+        roundNumber,
+      },
+      {
+        _id: `q2-round${roundNumber}`,
+        questionId: 2,
+        problem: "Use SQL injection to bypass the login form and extract the flag.",
+        placeholder: "Enter flag (e.g., HACKERA{flag})",
+        roundNumber,
+      },
+      {
+        _id: `q3-round${roundNumber}`,
+        questionId: 3,
+        problem: "Decode the encrypted message to reveal the hidden flag.",
+        placeholder: "Enter flag (e.g., HACKERA{flag})",
+        roundNumber,
+      },
+    ];
+  };
+
+  if (loading || questionsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -237,7 +214,6 @@ const ChallengePage: React.FC = () => {
     );
   }
 
-
   return (
     <div className="min-h-screen">
       <MatrixBackground />
@@ -260,13 +236,10 @@ const ChallengePage: React.FC = () => {
 
             <div className="flex flex-col xs:flex-row gap-2 items-start xs:items-center">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                {/* <div className="flex items-center">
+                <div className="flex items-center">
                   <Award className="h-4 w-4 mr-1 text-primary" />
-                  <span>
-                    {challenge.questions.reduce((sum, q) => sum + q.points, 0)}{" "}
-                    pts
-                  </span>
-                </div> */}
+                  <span>{challenge.points} pts</span>
+                </div>
 
                 <Separator orientation="vertical" className="h-4" />
 
@@ -279,7 +252,7 @@ const ChallengePage: React.FC = () => {
           </div>
         </div>
 
-        {/* overview */}
+        {/* Overview section */}
         <div className="space-y-6 mb-10">
           <h1 className="text-4xl font-semibold leading-none text-secondary tracking-wide">OVERVIEW</h1>
           <div className="lg:col-span-2 space-y-6">
@@ -297,7 +270,15 @@ const ChallengePage: React.FC = () => {
                 <CardTitle className="text-xl">Instructions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-
+                <div className="space-y-2">
+                  <h3 className="font-medium text-secondary">Challenge Environment</h3>
+                  <div className="flex items-center gap-2 bg-muted/50 p-3 rounded-md">
+                    <Server className="h-5 w-5 text-secondary" />
+                    <div className="font-mono text-sm">
+                      Target IP: <span className="text-primary">10.10.{Math.floor(Math.random() * 255)}.{Math.floor(Math.random() * 255)}</span>
+                    </div>
+                  </div>
+                </div>
 
                 <div className="space-y-2">
                   <h3 className="font-medium text-secondary">How to Submit</h3>
@@ -306,8 +287,7 @@ const ChallengePage: React.FC = () => {
                     <span className="font-mono bg-muted px-1 rounded">
                       HACKERA{"{flag_value}"}
                     </span>
-                    . Submit your answer in the corresponding question field in
-                    the Questions tab.
+                    . Submit your answer in the corresponding question field.
                   </p>
                 </div>
 
@@ -324,38 +304,30 @@ const ChallengePage: React.FC = () => {
           </div>
         </div>
         
-        {/* questions */}
-        {/* <div className="space-y-6">
+        {/* Questions section */}
+        <div className="space-y-6">
           <h1 className="text-4xl font-semibold leading-none text-secondary tracking-wide">QUESTIONS</h1>
-          {challenge.questions.map((question) => (
+          {questions && questions.map((question) => (
             <Card
-              key={question.id}
+              key={question._id}
               className="border border-border bg-card/70 backdrop-blur overflow-hidden"
             >
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-start mb-2">
                   <Badge
                     variant="outline"
-                    className={
-                      question.difficulty === "Easy"
-                        ? "bg-green-500/20 text-green-500"
-                        : question.difficulty === "Medium"
-                        ? "bg-blue-500/20 text-blue-500"
-                        : question.difficulty === "Hard"
-                        ? "bg-orange-500/20 text-orange-500"
-                        : "bg-red-500/20 text-red-500"
-                    }
+                    className="bg-green-500/20 text-green-500"
                   >
-                    {question.difficulty}
+                    Question {question.questionId}
                   </Badge>
-                  <Badge variant="secondary">{question.points} pts</Badge>
+                  <Badge variant="secondary">10 pts</Badge>
                 </div>
                 <div className="flex items-start gap-2">
                   <Key className="h-5 w-5 mt-0.5 text-secondary" />
                   <div>
-                    <CardTitle className="text-lg">{question.title}</CardTitle>
+                    <CardTitle className="text-lg">Find the Flag</CardTitle>
                     <p className="text-muted-foreground text-sm mt-1">
-                      {question.description}
+                      {question.problem}
                     </p>
                   </div>
                 </div>
@@ -367,9 +339,8 @@ const ChallengePage: React.FC = () => {
                     Hints:
                   </h4>
                   <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
-                    {question.hints.map((hint, index) => (
-                      <li key={index}>{hint}</li>
-                    ))}
+                    <li>Look for unusual patterns or hidden data</li>
+                    <li>Try common techniques like view source, inspect element, or network monitoring</li>
                   </ul>
                 </div>
               </CardContent>
@@ -377,30 +348,24 @@ const ChallengePage: React.FC = () => {
               <CardFooter className="border-t border-border pt-4 flex flex-col sm:flex-row gap-3">
                 <Input
                   type="text"
-                  placeholder="Enter your answer (e.g., HACKERA{flag})"
-                  value={answers[question.id] || ""}
+                  placeholder={question.placeholder}
+                  value={answers[question._id] || ""}
                   onChange={(e) =>
-                    handleAnswerChange(question.id, e.target.value)
+                    handleAnswerChange(question._id, e.target.value)
                   }
                   className="font-mono bg-background/80 border-border"
-                  disabled={question.completed}
                 />
                 <Button
-                  variant={question.completed ? "outline" : "default"}
-                  className={
-                    question.completed
-                      ? "border-primary text-primary hover:bg-primary/20 whitespace-nowrap"
-                      : "bg-primary hover:bg-primary/90 text-primary-foreground whitespace-nowrap"
-                  }
+                  variant="default"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground whitespace-nowrap"
                   onClick={() => handleSubmitAnswer(question)}
-                  disabled={question.completed}
                 >
-                  {question.completed ? "Completed" : "Submit Answer"}
+                  Submit Answer
                 </Button>
               </CardFooter>
             </Card>
           ))}
-        </div> */}
+        </div>
       </div>
     </div>
   );
