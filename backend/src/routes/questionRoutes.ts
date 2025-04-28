@@ -10,12 +10,11 @@ const router = express.Router();
 // Get questions according the round
 router.get(
   "/team/:teamId/day/:day/round/:round",
-  authenticateToken,
   async (req, res) => {
     try {
       const { teamId, day, round } = req.params;
 
-      const team = await Team.findById(teamId);
+      const team = await Team.findOne({teamId});
       if (!team) {
         return res.status(404).json({ message: "Team not found" });
       }
@@ -33,7 +32,7 @@ router.get(
 );
 
 // Submit a solution
-router.post("/submit", authenticateToken, async (req, res) => {
+router.post("/submit", async (req, res) => {
   try {
     const { teamId, questionId, solution } = req.body;
 
@@ -72,7 +71,7 @@ router.post("/submit", authenticateToken, async (req, res) => {
         existingStatus.status = "incorrect";
         await existingStatus.save();
       } 
-      return res.status(400).json({ message: "Solution is incorrect" });
+      return res.status(200).json({ message: "Solution is incorrect", iscorrect: false });
     }
 
     // If solution is correct
@@ -84,7 +83,7 @@ router.post("/submit", authenticateToken, async (req, res) => {
     // Add points to team
     await Team.updateOne({ teamId }, { $inc: { points: 10 } });
 
-    return res.json({ message: "Solution is correct" });
+    return res.status(200).json({ message: "Solution is correct", iscorrect: true });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error submitting solution", error });

@@ -1,35 +1,36 @@
+import React, { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Trophy, Medal, Award } from "lucide-react";
+import MatrixBackground from "@/components/MatrixBackground";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Search, Trophy, Medal, Award, Clock } from 'lucide-react';
-import MatrixBackground from '@/components/MatrixBackground';
-import axios from "axios"
 // Types for leaderboard
 type LeaderboardUser = {
   _id: string;
   teamId: string;
-  points: number
+  points: number;
 };
 
-
 const LeaderboardPage: React.FC = () => {
-  const [filteredUsers, setFilteredUsers] = useState<LeaderboardUser[]>([]);
+  const fetch_leaderboard = async () => {
+    const leaderboard_backend_response = await axios.get(
+      "http://localhost:5000/api/questions/points/"
+    );
+    // console.log("current leader borad is: ", leaderboard_backend_response);
 
-  useEffect(() => {
-    const fetch_leaderboard = async() => {
-      const leaderboard_backend_response = await axios.get("http://localhost:5000/api/questions/points/")
-      console.log("current leader borad is: ", leaderboard_backend_response);
-      
+    return leaderboard_backend_response.data;
+  };
 
-    setFilteredUsers(leaderboard_backend_response.data);
-    }
-
-    fetch_leaderboard()
-  }, []);
-
+  const {
+    data: leaderboard,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["leaderboard"],
+    queryFn: fetch_leaderboard,
+    refetchInterval: 5000,
+  });
 
   // Function to render rank badges with different styles for top 3
   const renderRankBadge = (rank: number) => {
@@ -67,7 +68,8 @@ const LeaderboardPage: React.FC = () => {
         <header className="mb-10">
           <h1 className="text-3xl font-bold mb-2 text-white">Leaderboard</h1>
           <p className="text-muted-foreground">
-            See how you rank against other participants in the HACK=ERA CTF Challenge.
+            See how you rank against other participants in the HACK=ERA CTF
+            Challenge.
           </p>
         </header>
 
@@ -80,40 +82,51 @@ const LeaderboardPage: React.FC = () => {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-border text-left">
-                    <th className="pb-3 pr-4 font-medium text-muted-foreground">Rank</th>
-                    <th className="pb-3 px-4 font-medium text-muted-foreground">User</th>
-                    <th className="pb-3 px-4 font-medium text-muted-foreground text-right">Points</th>
+                    <th className="pb-3 pr-4 font-medium text-muted-foreground">
+                      Rank
+                    </th>
+                    <th className="pb-3 px-4 font-medium text-muted-foreground">
+                      User
+                    </th>
+                    <th className="pb-3 px-4 font-medium text-muted-foreground text-right">
+                      Points
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredUsers.map((user,index) => (
-                    <tr 
-                      key={user._id} 
-                    >
-                      <td className="py-4 pr-4">
-                        <div className="flex items-center">
-                          {renderRankBadge(index+1)}
-                        </div>
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="flex items-center gap-2">
-                          <span className={`font-medium text-primary`}>
-                            {user.teamId}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="py-4 px-4 text-right font-mono text-secondary font-medium">
-                        {user.points} pts
-                      </td>
-                    </tr>
-                  ))}
-                  
-                  {filteredUsers.length === 0 && (
+                  {isLoading ? (
+                    <p>Loading...</p>
+                  ) : isError ? (
+                    <p>Error Loading LeaderBoard...</p>
+                  ) : leaderboard.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="py-6 text-center text-muted-foreground">
+                      <td
+                        colSpan={5}
+                        className="py-6 text-center text-muted-foreground"
+                      >
                         No users found matching your search.
                       </td>
                     </tr>
+                  ) : (
+                    leaderboard?.slice(0, 10).map((user, index) => (
+                      <tr key={user._id}>
+                        <td className="py-4 pr-4">
+                          <div className="flex items-center">
+                            {renderRankBadge(index + 1)}
+                          </div>
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="flex items-center gap-2">
+                            <span className={`font-medium text-primary`}>
+                              {user.teamId}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="py-4 px-4 text-right font-mono text-secondary font-medium">
+                          {user.points} pts
+                        </td>
+                      </tr>
+                    ))
                   )}
                 </tbody>
               </table>

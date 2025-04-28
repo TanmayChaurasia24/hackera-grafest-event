@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
@@ -14,17 +13,12 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import {
-  ArrowLeft,
-  Award,
-  Timer,
-  Server,
-  Key,
-} from "lucide-react";
+import { ArrowLeft, Award, Timer, Server, Key } from "lucide-react";
 import MatrixBackground from "@/components/MatrixBackground";
 import { day1_challanges } from "@/day1_challanges";
 import { day2_challanges } from "@/day2_challanges";
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 // Define Question type for the backend response
 type Question = {
@@ -52,34 +46,26 @@ const ChallengePage: React.FC = () => {
   const { toast } = useToast();
 
   // Simulate team ID for now - in a real app this would come from auth context
-  const teamId = "team123";
+  const teamId = "HCK-CTF-T100";
 
   // Use React Query to fetch questions from the backend
   const { data: questions, isLoading: questionsLoading } = useQuery({
     queryKey: ["questions", id],
     queryFn: async () => {
-      // Determine which round number this challenge belongs to
-      // This is just a simple example - in a real app, you'd have a more sophisticated way to map challenges to rounds
-      const roundNumber = parseInt(id || "1", 10) <= 3 ? 1 : 2;
-      
+      const day = 1;
+
       try {
-        // This would be replaced with your actual API endpoint
-        // For testing, we're mocking the response
-        console.log(`Fetching questions for round ${roundNumber}`);
-        
-        // This is where you would make the actual API call
-        // const response = await fetch(`/api/questions/team/${teamId}/round/${roundNumber}`);
-        // const data = await response.json();
-        // return data;
-        
-        // For testing, return mock questions
-        return mockQuestions(roundNumber);
+        const response = await fetch(
+          `http://localhost:5000/api/questions/team/${teamId}/day/${day}/round/${id}`
+        );
+        const data = await response.json();
+        return data;
       } catch (error) {
         console.error("Error fetching questions:", error);
         throw new Error("Failed to fetch questions");
       }
     },
-    enabled: !!id, // Only run query if id is available
+    enabled: !!id,
   });
 
   useEffect(() => {
@@ -89,8 +75,8 @@ const ChallengePage: React.FC = () => {
       if (id) {
         // Look for the challenge in both day1 and day2 challenges
         const allChallenges = [...day1_challanges, ...day2_challanges];
-        const foundChallenge = allChallenges.find(c => c.id === id);
-        
+        const foundChallenge = allChallenges.find((c) => c.id === id);
+
         if (foundChallenge) {
           setChallenge(foundChallenge);
           // Initialize answers object
@@ -110,8 +96,9 @@ const ChallengePage: React.FC = () => {
   };
 
   const handleSubmitAnswer = async (question: Question) => {
-    const answer = answers[question._id];
-    if (!answer?.trim()) {
+    const solution = answers[question._id];
+    const questionId = question.questionId;
+    if (!solution?.trim()) {
       toast({
         title: "Error",
         description: "Please enter an answer before submitting",
@@ -121,16 +108,24 @@ const ChallengePage: React.FC = () => {
     }
 
     try {
-      // In a real app, you would submit to your backend
-      // const response = await fetch('/api/questions/submit', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ teamId, questionId: question._id, solution: answer }),
-      // });
-      // const data = await response.json();
+      // console.log("going to backend: ", teamId, questionId, solution);
       
+      // In a real app, you would submit to your backend
+      const response: any = await axios.post("http://localhost:5000/api/questions/submit",{
+          teamId,
+          questionId,
+          solution
+        }, {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      );
+      const data = response.data;
+      // console.log(data);
+
       // Simulate response - in a real app this would come from the backend
-      const isCorrect = Math.random() > 0.7;
+      const isCorrect = data.iscorrect;
 
       if (isCorrect) {
         toast({
@@ -146,6 +141,8 @@ const ChallengePage: React.FC = () => {
         });
       }
     } catch (error) {
+      console.log(error);
+      
       toast({
         title: "Error",
         description: "Failed to submit answer. Please try again.",
@@ -158,33 +155,6 @@ const ChallengePage: React.FC = () => {
       ...prev,
       [question._id]: "",
     }));
-  };
-
-  // Mock function to generate sample questions for testing
-  const mockQuestions = (roundNumber: number): Question[] => {
-    return [
-      {
-        _id: `q1-round${roundNumber}`,
-        questionId: 1,
-        problem: "Discover the hidden flag in the source code of the application.",
-        placeholder: "Enter flag (e.g., HACKERA{flag})",
-        roundNumber,
-      },
-      {
-        _id: `q2-round${roundNumber}`,
-        questionId: 2,
-        problem: "Use SQL injection to bypass the login form and extract the flag.",
-        placeholder: "Enter flag (e.g., HACKERA{flag})",
-        roundNumber,
-      },
-      {
-        _id: `q3-round${roundNumber}`,
-        questionId: 3,
-        problem: "Decode the encrypted message to reveal the hidden flag.",
-        placeholder: "Enter flag (e.g., HACKERA{flag})",
-        roundNumber,
-      },
-    ];
   };
 
   if (loading || questionsLoading) {
@@ -254,20 +224,24 @@ const ChallengePage: React.FC = () => {
 
         {/* Overview section */}
         <div className="space-y-6 mb-10">
-          <h1 className="text-4xl font-semibold leading-none text-secondary tracking-wide">OVERVIEW</h1>
+          <h1 className="text-4xl font-semibold leading-none text-secondary tracking-wide">
+            OVERVIEW
+          </h1>
           <div className="lg:col-span-2 space-y-6">
-          <Card className="border border-border bg-card/70 backdrop-blur">
+            <Card className="border border-border bg-card/70 backdrop-blur">
               <CardHeader className="pb-2">
                 <CardTitle className="text-xl">{challenge.title}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <Badge variant="secondary">{challenge.points} pts</Badge>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <challenge.icon className="h-5 w-5 text-secondary" />
-                    <CardTitle className="text-lg">{challenge.description}</CardTitle>
-                  </div>
+                <div className="flex justify-between items-start mb-2">
+                  <Badge variant="secondary">{challenge.points} pts</Badge>
+                </div>
+                <div className="flex items-center gap-2">
+                  <challenge.icon className="h-5 w-5 text-secondary" />
+                  <CardTitle className="text-lg">
+                    {challenge.description}
+                  </CardTitle>
+                </div>
               </CardContent>
             </Card>
             <Card className="border border-border bg-card/70 backdrop-blur">
@@ -275,75 +249,64 @@ const ChallengePage: React.FC = () => {
                 <CardTitle className="text-xl">Problem Statement</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">{challenge.problem_statement}</p>
+                <p className="text-muted-foreground">
+                  {challenge.problem_statement}
+                </p>
               </CardContent>
             </Card>
-
-
           </div>
         </div>
-        
+
         {/* Questions section */}
         <div className="space-y-6">
-          <h1 className="text-4xl font-semibold leading-none text-secondary tracking-wide">QUESTIONS</h1>
-          {questions && questions.map((question) => (
-            <Card
-              key={question._id}
-              className="border border-border bg-card/70 backdrop-blur overflow-hidden"
-            >
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start mb-2">
-                  <Badge
-                    variant="outline"
-                    className="bg-green-500/20 text-green-500"
-                  >
-                    Question {question.questionId}
-                  </Badge>
-                  <Badge variant="secondary">10 pts</Badge>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Key className="h-5 w-5 mt-0.5 text-secondary" />
-                  <div>
-                    <CardTitle className="text-lg">Find the Flag</CardTitle>
-                    <p className="text-muted-foreground text-sm mt-1">
-                      {question.problem}
-                    </p>
+          <h1 className="text-4xl font-semibold leading-none text-secondary tracking-wide">
+            QUESTIONS
+          </h1>
+          {questions &&
+            questions.map((question) => (
+              <Card
+                key={question._id}
+                className="border border-border bg-card/70 backdrop-blur overflow-hidden"
+              >
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start mb-2">
+                    <Badge
+                      variant="outline"
+                      className="bg-green-500/20 text-green-500"
+                    >
+                      Question {question.questionId}
+                    </Badge>
+                    <Badge variant="secondary">10 pts</Badge>
                   </div>
-                </div>
-              </CardHeader>
-
-              <CardContent>
-                <div className="bg-muted/50 rounded-md p-3 my-2">
-                  <h4 className="text-sm font-medium text-secondary mb-2">
-                    Hints:
-                  </h4>
-                  <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
-                    <li>Look for unusual patterns or hidden data</li>
-                    <li>Try common techniques like view source, inspect element, or network monitoring</li>
-                  </ul>
-                </div>
-              </CardContent>
-
-              <CardFooter className="border-t border-border pt-4 flex flex-col sm:flex-row gap-3">
-                <Input
-                  type="text"
-                  placeholder={question.placeholder}
-                  value={answers[question._id] || ""}
-                  onChange={(e) =>
-                    handleAnswerChange(question._id, e.target.value)
-                  }
-                  className="font-mono bg-background/80 border-border"
-                />
-                <Button
-                  variant="default"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground whitespace-nowrap"
-                  onClick={() => handleSubmitAnswer(question)}
-                >
-                  Submit Answer
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
+                  <div className="flex items-start gap-2">
+                    <Key className="h-5 w-5 mt-0.5 text-secondary" />
+                    <div>
+                      <CardTitle className="text-lg">
+                        {question.problem}
+                      </CardTitle>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardFooter className="border-t border-border pt-4 flex flex-col sm:flex-row gap-3">
+                  <Input
+                    type="text"
+                    placeholder={question.placeholder}
+                    value={answers[question._id] || ""}
+                    onChange={(e) =>
+                      handleAnswerChange(question._id, e.target.value)
+                    }
+                    className="font-mono bg-background/80 border-border"
+                  />
+                  <Button
+                    variant="default"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground whitespace-nowrap"
+                    onClick={() => handleSubmitAnswer(question)}
+                  >
+                    Submit Answer
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
         </div>
       </div>
     </div>
