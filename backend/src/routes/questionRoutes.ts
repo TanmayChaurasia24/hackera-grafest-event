@@ -2,76 +2,105 @@ import express from "express";
 import { Question } from "../models/Question";
 import { Team } from "../models/Team";
 import { Solution } from "../models/Solution";
-import {authenticateToken} from "../middlewares/auth"
+import { authenticateToken } from "../middlewares/auth";
+import { Status } from "../models/Status";
 
 const router = express.Router();
 
-// Get questions for a specific team based on their IP address
-router.get("/team/:teamId/day/:day/round/:round", authenticateToken, async (req, res) => {
-  try {
-    const { teamId, day, round } = req.params;
+// Get questions according the round
+router.get(
+  "/team/:teamId/day/:day/round/:round",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const { teamId, day, round } = req.params;
 
-    const team = await Team.findById(teamId);
-    if (!team) {
-      return res.status(404).json({ message: "Team not found" });
+      const team = await Team.findById(teamId);
+      if (!team) {
+        return res.status(404).json({ message: "Team not found" });
+      }
+
+      const questions = await Question.find({
+        day: parseInt(day),
+        round: parseInt(round),
+      });
+
+      res.json(questions);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching questions", error });
     }
-
-    const questions = await Question.find({
-      day: parseInt(day),
-      round: parseInt(round),
-    });
-
-    res.json(questions);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching questions", error });
   }
-});
-
+);
 
 // Submit a solution
 router.post("/submit", authenticateToken, async (req, res) => {
   try {
-    const { teamId, questionId, solution, ipAddress } = req.body;
+    const { teamId, questionId, solution } = req.body;
 
-    // Validate team and question exist
-    const team = await Team.findById(teamId);
-    const question = await Question.findById(questionId);
-
-    if (!team || !question) {
-      return res.status(404).json({ message: "Team or question not found" });
+    // Validate team
+    const team = await Team.findOne({ teamId });
+    if (!team) {
+      return res.status(404).json({ message: "Team not found" });
     }
 
-    // Check for existing solution
-    const existingSolution = await Solution.findOne({ teamId, questionId, ipAddress });
+    // Validate question
+    const question = await Question.findOne({ questionId });
+    if (!question) {
+      return res.status(404).json({ message: "Question not found" });
+    }
 
-    // If solution was previously correct, don't process again
-    if (existingSolution?.status === "correct") {
+    // Fetch the correct solution (from correct solutions database or embedded inside question)
+    const correctSolution = await Solution.findOne({ questionId });
+    if (!correctSolution) {
+      return res.status(404).json({ message: "Correct solution not found" });
+    }
+
+    // Check for existing status
+    let existingStatus = await Status.findOne({ teamId, questionId });
+
+    // If already correct
+    if (existingStatus && existingStatus.status === "correct") {
       return res
         .status(400)
-        .json({ message: "Solution already submitted and correct" });
+        .json({ message: "Solution already submitted and marked correct" });
     }
-    if (solution !== existingSolution?.solution) {
+
+    // Validate solution
+    if (solution !== correctSolution.solution) {
+      // Update or create wrong/pending status
+      if (existingStatus) {
+        existingStatus.status = "incorrect";
+        await existingStatus.save();
+      } 
       return res.status(400).json({ message: "Solution is incorrect" });
     }
-    await Solution.updateOne({ teamId, questionId }, { status: "correct" });
-    await Team.updateOne({ _id: teamId }, { $inc: { points: 10 } });
+
+    // If solution is correct
+    if (existingStatus) {
+      existingStatus.status = "correct";
+      await existingStatus.save();
+    } 
+
+    // Add points to team
+    await Team.updateOne({ teamId }, { $inc: { points: 10 } });
+
     return res.json({ message: "Solution is correct" });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Error submitting solution", error });
   }
 });
 
 
 // Get team points
-router.get("/points", async(req,res)=>{
+router.get("/points", async (req, res) => {
   try {
-    const teams = await Team.find({}, "teamId points")
-      .sort({ points: -1 }); // Sort by highest points
+    const teams = await Team.find({}, "teamId points").sort({ points: -1 }); // Sort by highest points
 
     res.json(teams);
   } catch (error) {
     res.status(500).json({ message: "Error fetching team points", error });
   }
-})
+});
 
 export default router;
