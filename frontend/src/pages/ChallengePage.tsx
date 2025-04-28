@@ -56,7 +56,7 @@ const ChallengePage: React.FC = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:5000/api/questions/team/${teamId}/day/${day}/round/${id}`
+          `https://hackera-backend.onrender.com/api/questions/team/${teamId}/day/${day}/round/${id}`
         );
         const data = await response.json();
         return data;
@@ -109,16 +109,19 @@ const ChallengePage: React.FC = () => {
 
     try {
       // console.log("going to backend: ", teamId, questionId, solution);
-      
+
       // In a real app, you would submit to your backend
-      const response: any = await axios.post("http://localhost:5000/api/questions/submit",{
+      const response: any = await axios.post(
+        "https://hackera-backend.onrender.com/api/questions/submit",
+        {
           teamId,
           questionId,
-          solution
-        }, {
+          solution,
+        },
+        {
           headers: {
-            "Content-Type": "application/json"
-          }
+            "Content-Type": "application/json",
+          },
         }
       );
       const data = response.data;
@@ -142,7 +145,7 @@ const ChallengePage: React.FC = () => {
       }
     } catch (error) {
       console.log(error);
-      
+
       toast({
         title: "Error",
         description: "Failed to submit answer. Please try again.",
