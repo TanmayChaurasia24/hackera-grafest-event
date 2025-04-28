@@ -21,6 +21,7 @@ import {
   Key,
 } from "lucide-react";
 import MatrixBackground from "@/components/MatrixBackground";
+import { day1_challanges } from "@/day1_challanges";
 
 // Challenge types and data
 type Question = {
@@ -36,106 +37,103 @@ type Question = {
 type ChallengeDetail = {
   id: string;
   title: string;
+  problem_statement: String;
   description: string;
-  category: string;
-  difficulty: "Easy" | "Medium" | "Hard" | "Extreme";
-  ipAddress: string;
-  port: number;
-  questions: Question[];
-  resources: { title: string; url: string }[];
+  points: number;
+  icon: React.ElementType;
 };
 
-// Mock challenge data
-const challengesData: Record<string, ChallengeDetail> = {
-  "1": {
-    id: "1",
-    title: "Web Exploitation Basics",
-    description:
-      "This challenge focuses on common web vulnerabilities. You'll practice identifying and exploiting cross-site scripting (XSS), SQL injection, and CSRF vulnerabilities. Connect to the provided VM and find the flags!",
-    category: "Web Security",
-    difficulty: "Easy",
-    ipAddress: "192.168.1.10",
-    port: 80,
-    questions: [
-      {
-        id: "1-1",
-        title: "Find the XSS vulnerability",
-        description:
-          "There is a reflected XSS vulnerability in the search function of the application. Craft a payload that will execute JavaScript and retrieve the hidden flag.",
-        hints: [
-          "Check input fields that might not be properly sanitized",
-          "The search function doesn't escape special characters",
-        ],
-        difficulty: "Easy",
-        completed: false,
-        points: 20,
-      },
-      {
-        id: "1-2",
-        title: "SQL Injection Challenge",
-        description:
-          "The login form is vulnerable to SQL injection. Find a way to bypass authentication and access the admin panel without knowing the password.",
-        hints: [
-          "Try classic SQL injection patterns",
-          "The query might be something like: SELECT * FROM users WHERE username='[input]' AND password='[input]'",
-        ],
-        difficulty: "Medium",
-        completed: false,
-        points: 30,
-      },
-      {
-        id: "1-3",
-        title: "CSRF Token Bypass",
-        description:
-          "The application has CSRF protection, but it's implemented incorrectly. Create a proof of concept that can change a user's email address without their knowledge.",
-        hints: [
-          "The CSRF token validation has a flaw",
-          "Check how tokens are generated and validated",
-        ],
-        difficulty: "Medium",
-        completed: false,
-        points: 30,
-      },
-      {
-        id: "1-4",
-        title: "Hidden Directory Discovery",
-        description:
-          "There's a hidden administration directory that contains sensitive files. Use directory brute forcing to find it and retrieve the flag file.",
-        hints: [
-          "Common admin directory names might be used",
-          "Try tools like dirb or gobuster, or create your own wordlist",
-        ],
-        difficulty: "Easy",
-        completed: false,
-        points: 20,
-      },
-      {
-        id: "1-5",
-        title: "Local File Inclusion",
-        description:
-          "The website has a local file inclusion vulnerability. Find a way to read the /etc/passwd file from the server.",
-        hints: [
-          "Look for parameters that might include files",
-          "Try path traversal techniques with ../",
-        ],
-        difficulty: "Hard",
-        completed: false,
-        points: 40,
-      },
-    ],
-    resources: [
-      {
-        title: "OWASP XSS Prevention Cheat Sheet",
-        url: "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html",
-      },
-      {
-        title: "SQL Injection Cheat Sheet",
-        url: "https://portswigger.net/web-security/sql-injection/cheat-sheet",
-      },
-    ],
-  },
-  // More challenges would be defined here
-};
+// // Mock challenge data
+// const challengesData: Record<string, ChallengeDetail> = {
+//   "1": {
+//     id: "1",
+//     title: "Web Exploitation Basics",
+//     description:
+//       "This challenge focuses on common web vulnerabilities. You'll practice identifying and exploiting cross-site scripting (XSS), SQL injection, and CSRF vulnerabilities. Connect to the provided VM and find the flags!",
+//     category: "Web Security",
+//     difficulty: "Easy",
+//     ipAddress: "192.168.1.10",
+//     port: 80,
+//     questions: [
+//       {
+//         id: "1-1",
+//         title: "Find the XSS vulnerability",
+//         description:
+//           "There is a reflected XSS vulnerability in the search function of the application. Craft a payload that will execute JavaScript and retrieve the hidden flag.",
+//         hints: [
+//           "Check input fields that might not be properly sanitized",
+//           "The search function doesn't escape special characters",
+//         ],
+//         difficulty: "Easy",
+//         completed: false,
+//         points: 20,
+//       },
+//       {
+//         id: "1-2",
+//         title: "SQL Injection Challenge",
+//         description:
+//           "The login form is vulnerable to SQL injection. Find a way to bypass authentication and access the admin panel without knowing the password.",
+//         hints: [
+//           "Try classic SQL injection patterns",
+//           "The query might be something like: SELECT * FROM users WHERE username='[input]' AND password='[input]'",
+//         ],
+//         difficulty: "Medium",
+//         completed: false,
+//         points: 30,
+//       },
+//       {
+//         id: "1-3",
+//         title: "CSRF Token Bypass",
+//         description:
+//           "The application has CSRF protection, but it's implemented incorrectly. Create a proof of concept that can change a user's email address without their knowledge.",
+//         hints: [
+//           "The CSRF token validation has a flaw",
+//           "Check how tokens are generated and validated",
+//         ],
+//         difficulty: "Medium",
+//         completed: false,
+//         points: 30,
+//       },
+//       {
+//         id: "1-4",
+//         title: "Hidden Directory Discovery",
+//         description:
+//           "There's a hidden administration directory that contains sensitive files. Use directory brute forcing to find it and retrieve the flag file.",
+//         hints: [
+//           "Common admin directory names might be used",
+//           "Try tools like dirb or gobuster, or create your own wordlist",
+//         ],
+//         difficulty: "Easy",
+//         completed: false,
+//         points: 20,
+//       },
+//       {
+//         id: "1-5",
+//         title: "Local File Inclusion",
+//         description:
+//           "The website has a local file inclusion vulnerability. Find a way to read the /etc/passwd file from the server.",
+//         hints: [
+//           "Look for parameters that might include files",
+//           "Try path traversal techniques with ../",
+//         ],
+//         difficulty: "Hard",
+//         completed: false,
+//         points: 40,
+//       },
+//     ],
+//     resources: [
+//       {
+//         title: "OWASP XSS Prevention Cheat Sheet",
+//         url: "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html",
+//       },
+//       {
+//         title: "SQL Injection Cheat Sheet",
+//         url: "https://portswigger.net/web-security/sql-injection/cheat-sheet",
+//       },
+//     ],
+//   },
+//   // More challenges would be defined here
+// };
 
 const ChallengePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -148,14 +146,14 @@ const ChallengePage: React.FC = () => {
     // Simulate API call to fetch challenge details
     setLoading(true);
     setTimeout(() => {
-      if (id && challengesData[id]) {
-        setChallenge(challengesData[id]);
+      if (id && day1_challanges[id]) {
+        setChallenge(day1_challanges[id]);
         // Initialize answers object
-        const initialAnswers: Record<string, string> = {};
-        challengesData[id].questions.forEach((q) => {
-          initialAnswers[q.id] = "";
-        });
-        setAnswers(initialAnswers);
+        // const initialAnswers: Record<string, string> = {};
+        // day1_challanges[id].questions.forEach((q) => {
+        //   initialAnswers[q.id] = "";
+        // });
+        // setAnswers(initialAnswers);
       }
       setLoading(false);
     }, 500);
@@ -191,12 +189,12 @@ const ChallengePage: React.FC = () => {
       });
 
       // Update the completed status of the question
-      if (challenge) {
-        const updatedQuestions = challenge.questions.map((q) =>
-          q.id === question.id ? { ...q, completed: true } : q
-        );
-        setChallenge({ ...challenge, questions: updatedQuestions });
-      }
+      // if (challenge) {
+      //   const updatedQuestions = challenge.questions.map((q) =>
+      //     q.id === question.id ? { ...q, completed: true } : q
+      //   );
+      //   setChallenge({ ...challenge, questions: updatedQuestions });
+      // }
     } else {
       toast({
         title: "Incorrect",
@@ -239,9 +237,6 @@ const ChallengePage: React.FC = () => {
     );
   }
 
-  // Calculate progress
-  const completedCount = challenge.questions.filter((q) => q.completed).length;
-  const progress = (completedCount / challenge.questions.length) * 100;
 
   return (
     <div className="min-h-screen">
@@ -261,46 +256,17 @@ const ChallengePage: React.FC = () => {
               <h1 className="text-2xl md:text-3xl font-bold text-primary mb-2">
                 {challenge.title}
               </h1>
-              <div className="flex flex-wrap items-center gap-2 mb-2">
-                <Badge
-                  variant="outline"
-                  className="bg-secondary/20 text-secondary"
-                >
-                  {challenge.category}
-                </Badge>
-                <Badge
-                  variant="outline"
-                  className={
-                    challenge.difficulty === "Easy"
-                      ? "bg-green-500/20 text-green-500"
-                      : challenge.difficulty === "Medium"
-                      ? "bg-blue-500/20 text-blue-500"
-                      : challenge.difficulty === "Hard"
-                      ? "bg-orange-500/20 text-orange-500"
-                      : "bg-red-500/20 text-red-500"
-                  }
-                >
-                  {challenge.difficulty}
-                </Badge>
-              </div>
             </div>
 
             <div className="flex flex-col xs:flex-row gap-2 items-start xs:items-center">
-              <div className="flex items-center bg-muted/50 rounded-md px-3 py-1.5 text-sm">
-                <Server className="h-4 w-4 mr-2 text-secondary" />
-                <span className="font-mono text-muted-foreground">
-                  IP: {challenge.ipAddress}:{challenge.port}
-                </span>
-              </div>
-
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <div className="flex items-center">
+                {/* <div className="flex items-center">
                   <Award className="h-4 w-4 mr-1 text-primary" />
                   <span>
                     {challenge.questions.reduce((sum, q) => sum + q.points, 0)}{" "}
                     pts
                   </span>
-                </div>
+                </div> */}
 
                 <Separator orientation="vertical" className="h-4" />
 
@@ -310,19 +276,6 @@ const ChallengePage: React.FC = () => {
                 </div>
               </div>
             </div>
-          </div>
-
-          <div className="mt-4 space-y-2">
-            <div className="flex justify-between text-xs">
-              <span className="text-muted-foreground">
-                Progress: {completedCount} of {challenge.questions.length}{" "}
-                completed
-              </span>
-              <span className="text-secondary font-medium">
-                {progress.toFixed(0)}%
-              </span>
-            </div>
-            <Progress value={progress} className="h-1.5 bg-muted" />
           </div>
         </div>
 
@@ -335,7 +288,7 @@ const ChallengePage: React.FC = () => {
                 <CardTitle className="text-xl">Description</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">{challenge.description}</p>
+                <p className="text-muted-foreground">{challenge.problem_statement}</p>
               </CardContent>
             </Card>
 
@@ -344,23 +297,7 @@ const ChallengePage: React.FC = () => {
                 <CardTitle className="text-xl">Instructions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <h3 className="font-medium text-secondary">
-                    Connection Details
-                  </h3>
-                  <p className="text-muted-foreground text-sm">
-                    Connect to the virtual machine at{" "}
-                    <span className="font-mono bg-muted px-1 rounded">
-                      {challenge.ipAddress}
-                    </span>{" "}
-                    on port{" "}
-                    <span className="font-mono bg-muted px-1 rounded">
-                      {challenge.port}
-                    </span>
-                    . You'll need to use tools such as web browsers, Burp Suite,
-                    or other security tools to solve the challenges.
-                  </p>
-                </div>
+
 
                 <div className="space-y-2">
                   <h3 className="font-medium text-secondary">How to Submit</h3>
@@ -388,7 +325,7 @@ const ChallengePage: React.FC = () => {
         </div>
         
         {/* questions */}
-        <div className="space-y-6">
+        {/* <div className="space-y-6">
           <h1 className="text-4xl font-semibold leading-none text-secondary tracking-wide">QUESTIONS</h1>
           {challenge.questions.map((question) => (
             <Card
@@ -463,7 +400,7 @@ const ChallengePage: React.FC = () => {
               </CardFooter>
             </Card>
           ))}
-        </div>
+        </div> */}
       </div>
     </div>
   );
