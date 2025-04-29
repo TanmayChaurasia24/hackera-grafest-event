@@ -38,12 +38,12 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <Card className="w-full max-w-md border border-border bg-card/70 backdrop-blur-md">
+    <Card className="w-full max-w ">
       <CardHeader className="space-y-1">
         <div className="flex justify-center mb-2">
           <Shield className="h-10 w-10 text-primary" />
         </div>
-        <CardTitle className="text-xl text-center font-bold">Login to HACK=ERA</CardTitle>
+        <CardTitle className="text-xl text-center font-bold">Login to HACK-ERA</CardTitle>
         <CardDescription className="text-center text-muted-foreground">
           Enter your credentials to access challenges
         </CardDescription>
@@ -94,10 +94,6 @@ const LoginForm: React.FC = () => {
           {isLoading ? 'Authenticating...' : 'Login'}
         </Button>
       </CardFooter>
-      
-      <div className="px-6 pb-4 text-xs text-muted-foreground text-center">
-        <p>Demo accounts: admin/admin, test/test</p>
-      </div>
     </Card>
   );
 };

@@ -89,7 +89,7 @@ const LandingPage: React.FC = () => {
             </div>
           </div>
           
-          <div id="login-section" className="flex justify-center w-full">
+          <div id="login-section" className="flex bg-slate-200 justify-center w-full rounded-lg p-[1px] bg-gradient-to-tr from-purple-600 via-cyan-500 to-yellow-400">
             <LoginForm />
           </div>
         </div>

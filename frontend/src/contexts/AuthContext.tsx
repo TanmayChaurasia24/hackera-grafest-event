@@ -47,7 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     if (storedUser) {
       try {
         const parsedUser: any = jwtDecode(storedUser);
-        console.log(parsedUser);
+        // console.log(parsedUser);
         
         setUser({
           id: parsedUser.id,
@@ -84,16 +84,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         });
       }
 
-      console.log("login response is: ", login_response);
+      // console.log("login response is: ", login_response);
       const token = login_response.data.token;
 
       if (token) {
-        console.log("token is: ", token);
+        // console.log("token is: ", token);
         Cookies.set("loggedin", token, { expires: 1, secure: true, path: "/" });
       }
 
       const parsedUser: any = jwtDecode(token);
-      console.log(parsedUser);
+      // console.log(parsedUser);
       
       setUser({
         id: parsedUser.id,

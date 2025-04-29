@@ -144,7 +144,7 @@ const ChallengePage: React.FC = () => {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
 
       toast({
         title: "Error",
