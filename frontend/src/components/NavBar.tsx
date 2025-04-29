@@ -94,7 +94,7 @@ const NavBar: React.FC = () => {
                   {user?.teamid}
                 </span>
                 <span className="text-muted-foreground">
-                  ({isLoading ? <p>Loading...</p> : points} pts)
+                  ({isLoading ? 0 : points} pts)
                 </span>
               </div>
               <Button
