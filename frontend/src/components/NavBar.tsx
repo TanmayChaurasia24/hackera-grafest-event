@@ -6,6 +6,8 @@ import { Menu, Lock, Trophy, LogOut, User } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import logo from "@/images/hackera_logo.png";
 import Cookies from "js-cookie";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 type NavLink = {
   name: string;
   href: string;
@@ -18,6 +20,24 @@ const NavBar: React.FC = () => {
 
   const [navlinks, setNavlinks] = useState<NavLink[]>([]);
   
+  const fetch_points = async () => {
+    const points_backend_response = await axios.get(
+      `https://hackera-backend.onrender.com/api/teams/${user?.teamid}/points/`
+    );
+    // console.log("current leader borad is: ", leaderboard_backend_response);
+
+    return points_backend_response.data;
+  };
+
+  const {
+    data: points,
+    isLoading,
+  } = useQuery({
+    queryKey: ["points"],
+    queryFn: fetch_points,
+    refetchInterval: 5000,
+  });
+
   useEffect(() => {
   
     if (isAuthenticated) {
@@ -74,7 +94,7 @@ const NavBar: React.FC = () => {
                   {user?.teamid}
                 </span>
                 <span className="text-muted-foreground">
-                  ({user?.points} pts)
+                  ({isLoading ? <p>Loading...</p> : points} pts)
                 </span>
               </div>
               <Button
