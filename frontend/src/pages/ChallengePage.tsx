@@ -16,9 +16,11 @@ import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Award, Timer, Server, Key } from "lucide-react";
 import MatrixBackground from "@/components/MatrixBackground";
 import { day1_challanges } from "@/day1_challanges";
-import { day2_challanges } from "@/day2_challanges";
+// import { day2_challanges } from "@/day2_challanges";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import Cookies from "js-cookie"
+import { jwtDecode } from "jwt-decode";
 
 // Define Question type for the backend response
 type Question = {
@@ -46,7 +48,12 @@ const ChallengePage: React.FC = () => {
   const { toast } = useToast();
 
   // Simulate team ID for now - in a real app this would come from auth context
-  const teamId = "HCK-CTF-T100";
+  const payload: any = jwtDecode(Cookies.get('loggedin'))
+  // console.log("payload is: ", payload);
+  
+  const teamId = payload.teamId;
+  // console.log("team id is: ", teamId);
+  
 
   // Use React Query to fetch questions from the backend
   const { data: questions, isLoading: questionsLoading } = useQuery({
@@ -74,7 +81,7 @@ const ChallengePage: React.FC = () => {
     setTimeout(() => {
       if (id) {
         // Look for the challenge in both day1 and day2 challenges
-        const allChallenges = [...day1_challanges, ...day2_challanges];
+        const allChallenges = [...day1_challanges];
         const foundChallenge = allChallenges.find((c) => c.id === id);
 
         if (foundChallenge) {
@@ -108,7 +115,7 @@ const ChallengePage: React.FC = () => {
     }
 
     try {
-      // console.log("going to backend: ", teamId, questionId, solution);
+      console.log("going to backend: ", teamId, questionId, solution);
 
       // In a real app, you would submit to your backend
       const response: any = await axios.post(
@@ -125,7 +132,7 @@ const ChallengePage: React.FC = () => {
         }
       );
       const data = response.data;
-      // console.log(data);
+      console.log(data);
 
       // Simulate response - in a real app this would come from the backend
       const isCorrect = data.iscorrect;
