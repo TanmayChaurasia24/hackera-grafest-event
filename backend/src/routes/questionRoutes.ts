@@ -102,4 +102,21 @@ router.get("/points", async (req, res) => {
   }
 });
 
+// Get specific team points
+router.get("/:teamId/points", async (req, res) => {
+  try {
+    const { teamId } = req.params;
+    const team = await Team.findOne({ teamId }, "points");
+
+    if (!team) {
+      return res.status(404).json({ message: "Team not found" });
+    }
+
+    res.json({ points: team.points });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching team points", error });
+  }
+});
+
+
 export default router;
