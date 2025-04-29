@@ -22,11 +22,11 @@ const NavBar: React.FC = () => {
   
   const fetch_points = async () => {
     const points_backend_response = await axios.get(
-      `https://hackera-backend.onrender.com/api/teams/${user?.teamid}/points/`
+      `https://hackera-backend.onrender.com/api/questions/${user?.teamid}/points/`
     );
-    // console.log("current leader borad is: ", leaderboard_backend_response);
+    // console.log("current leader borad is: ", points_backend_response);
 
-    return points_backend_response.data;
+    return points_backend_response.data.points;
   };
 
   const {
