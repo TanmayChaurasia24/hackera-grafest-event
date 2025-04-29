@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
@@ -13,11 +14,11 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Award, Timer, Server, Key } from "lucide-react";
+import { ArrowLeft, Award, Timer, Server, Key, CheckCircle } from "lucide-react";
 import MatrixBackground from "@/components/MatrixBackground";
 import { day1_challanges } from "@/day1_challanges";
 // import { day2_challanges } from "@/day2_challanges";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import Cookies from "js-cookie"
 import { jwtDecode } from "jwt-decode";
@@ -29,6 +30,7 @@ type Question = {
   problem: string;
   placeholder: string;
   roundNumber: number;
+  isCorrect?: boolean;
 };
 
 type ChallengeDetail = {
@@ -46,18 +48,15 @@ const ChallengePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  // Simulate team ID for now - in a real app this would come from auth context
+  // Decode JWT to get team ID
   const payload: any = jwtDecode(Cookies.get('loggedin'))
-  // console.log("payload is: ", payload);
-  
   const teamId = payload.teamId;
-  // console.log("team id is: ", teamId);
-  
 
   // Use React Query to fetch questions from the backend
   const { data: questions, isLoading: questionsLoading } = useQuery({
-    queryKey: ["questions", id],
+    queryKey: ["questions", id, teamId],
     queryFn: async () => {
       const day = 1;
 
@@ -72,11 +71,13 @@ const ChallengePage: React.FC = () => {
         throw new Error("Failed to fetch questions");
       }
     },
-    enabled: !!id,
+    enabled: !!id && !!teamId,
   });
 
   useEffect(() => {
     // Find the challenge from both day1 and day2 challenges
+    console.log("ans: ", answers);
+    
     setLoading(true);
     setTimeout(() => {
       if (id) {
@@ -105,6 +106,7 @@ const ChallengePage: React.FC = () => {
   const handleSubmitAnswer = async (question: Question) => {
     const solution = answers[question._id];
     const questionId = question.questionId;
+    
     if (!solution?.trim()) {
       toast({
         title: "Error",
@@ -115,10 +117,7 @@ const ChallengePage: React.FC = () => {
     }
 
     try {
-      console.log("going to backend: ", teamId, questionId, solution);
-
-      // In a real app, you would submit to your backend
-      const response: any = await axios.post(
+      const response = await axios.post(
         "https://hackera-backend.onrender.com/api/questions/submit",
         {
           teamId,
@@ -131,17 +130,36 @@ const ChallengePage: React.FC = () => {
           },
         }
       );
+      
       const data = response.data;
-      console.log(data);
-
-      // Simulate response - in a real app this would come from the backend
-      const isCorrect = data.iscorrect;
+      console.log("data is: ", data);
+      
+      const isCorrect = data.isCorrect;
+      console.log("data answer is: ", data.solution);
+      
 
       if (isCorrect) {
         toast({
           title: "Correct!",
           description: `You've earned points for this question!`,
           variant: "default",
+        });
+        
+        // Update the UI immediately without waiting for refetch
+        setAnswers(prev => ({
+          ...prev,
+          [question._id]: data.solution,
+        }));
+
+        // Update the questions cache to mark this question as correct
+        queryClient.setQueryData(["questions", id, teamId], (oldData: any) => {
+          if (!oldData) return oldData;
+          return oldData.map((q: Question) => {
+            if (q._id === question._id) {
+              return { ...q, isCorrect: true };
+            }
+            return q;
+          });
         });
       } else {
         toast({
@@ -151,20 +169,12 @@ const ChallengePage: React.FC = () => {
         });
       }
     } catch (error) {
-      // console.log(error);
-
       toast({
         title: "Error",
         description: "Failed to submit answer. Please try again.",
         variant: "destructive",
       });
     }
-
-    // Clear the answer field
-    setAnswers((prev) => ({
-      ...prev,
-      [question._id]: "",
-    }));
   };
 
   if (loading || questionsLoading) {
@@ -273,7 +283,7 @@ const ChallengePage: React.FC = () => {
             QUESTIONS
           </h1>
           {questions &&
-            questions.map((question) => (
+            questions.map((question: Question) => (
               <Card
                 key={question._id}
                 className="border border-border bg-card/70 backdrop-blur overflow-hidden"
@@ -282,9 +292,10 @@ const ChallengePage: React.FC = () => {
                   <div className="flex justify-between items-start mb-2">
                     <Badge
                       variant="outline"
-                      className="bg-green-500/20 text-green-500"
+                      className={`${question.isCorrect ? "bg-green-500/20 text-green-500" : "bg-blue-500/20 text-blue-500"}`}
                     >
                       Question {question.questionId}
+                      {question.isCorrect && <CheckCircle className="ml-1 h-3 w-3" />}
                     </Badge>
                     <Badge variant="secondary">10 pts</Badge>
                   </div>
@@ -305,14 +316,23 @@ const ChallengePage: React.FC = () => {
                     onChange={(e) =>
                       handleAnswerChange(question._id, e.target.value)
                     }
-                    className="font-mono bg-background/80 border-border"
+                    className={`font-mono bg-background/80 border-border ${
+                      question.isCorrect ? "text-green-500" : ""
+                    }`}
+                    disabled={question.isCorrect}
+                    readOnly={question.isCorrect}
                   />
                   <Button
-                    variant="default"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground whitespace-nowrap"
+                    variant={question.isCorrect ? "secondary" : "default"}
+                    className={`${
+                      question.isCorrect 
+                        ? "bg-green-500 hover:bg-green-500 text-white cursor-not-allowed opacity-80" 
+                        : "bg-primary hover:bg-primary/90 text-primary-foreground"
+                    } whitespace-nowrap`}
                     onClick={() => handleSubmitAnswer(question)}
+                    disabled={question.isCorrect}
                   >
-                    Submit Answer
+                    {question.isCorrect ? "Correct" : "Submit Answer"}
                   </Button>
                 </CardFooter>
               </Card>

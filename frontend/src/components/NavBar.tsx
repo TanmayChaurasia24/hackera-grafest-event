@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, Lock, Trophy, LogOut, User } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import logo from "@/images/hackera_logo.png";
-import Cookies from "js-cookie";
+import logo_grafest from "@/images/gra_w_label-1.png"
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 type NavLink = {
@@ -58,11 +58,18 @@ const NavBar: React.FC = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-6">
           {/* Logo for all screens, use Mr Robot font */}
           <Link to="/" className="flex items-center gap-2">
             <img
               src={logo}
+              alt="HACK=ERA"
+              className="w-full md:max-w-lg h-10 lg:max-w-sm"
+            />
+          </Link>
+          <Link to="#" className="flex items-center gap-2">
+            <img
+              src={logo_grafest}
               alt="HACK=ERA"
               className="w-full md:max-w-lg h-10"
             />
