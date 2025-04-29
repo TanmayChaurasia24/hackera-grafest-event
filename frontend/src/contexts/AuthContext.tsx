@@ -66,7 +66,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   // Login function
   const login = async (teamid: string, password: string) => {
     // Simulate API call
-
+    setIsLoading(true);
     try {
       const login_response = await axios.post(
         "https://hackera-backend.onrender.com/api/teams/login",
