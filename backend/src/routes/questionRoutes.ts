@@ -48,7 +48,7 @@ router.post("/submit", async (req, res) => {
       return res.status(404).json({ message: "Question not found" });
     }
 
-    // Fetch the correct solution (from correct solutions database or embedded inside question)
+    // Fetch the correct solution
     const correctSolution = await Solution.findOne({ questionId });
     if (!correctSolution) {
       return res.status(404).json({ message: "Correct solution not found" });
@@ -64,13 +64,19 @@ router.post("/submit", async (req, res) => {
         .json({ message: "Solution already submitted and marked correct" });
     }
 
+    // Normalize solutions (case-insensitive)
+    const submitted = solution.trim().toLowerCase();
+    const correct = correctSolution.solution.trim().toLowerCase();
+
     // Validate solution
-    if (solution !== correctSolution.solution) {
+    if (submitted !== correct) {
       // Update or create wrong/pending status
       if (existingStatus) {
         existingStatus.status = "incorrect";
         await existingStatus.save();
-      } 
+      } else {
+        await Status.create({ teamId, questionId, status: "incorrect" });
+      }
       return res.status(200).json({ message: "Solution is incorrect", iscorrect: false });
     }
 
@@ -78,17 +84,20 @@ router.post("/submit", async (req, res) => {
     if (existingStatus) {
       existingStatus.status = "correct";
       await existingStatus.save();
-    } 
+    } else {
+      await Status.create({ teamId, questionId, status: "correct" });
+    }
 
     // Add points to team
     await Team.updateOne({ teamId }, { $inc: { points: 10 } });
+    return res.status(200).json({ message: "Solution is correct", iscorrect: true, answer: correctSolution});
 
-    return res.status(200).json({ message: "Solution is correct", iscorrect: true });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error submitting solution", error });
   }
 });
+
 
 
 // Get team points
@@ -117,6 +126,24 @@ router.get("/:teamId/points", async (req, res) => {
     res.status(500).json({ message: "Error fetching team points", error });
   }
 });
+
+// Get that answer already submitted or not
+// router.get("/team/:teamId/question/:questionId", async (req, res) => {
+//   try {
+//     const { teamId, questionId } = req.params;
+
+//     // Check for existing status
+//     let status = await Status.findOne({ teamId, questionId });
+
+//     if(status && status.status === "correct")
+//     {
+//       res.json({status: true})
+//     }
+//     res.json({ status: false });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error fetching team status", error });
+//   }
+// });
 
 
 export default router;
