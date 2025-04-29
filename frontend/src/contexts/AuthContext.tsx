@@ -1,9 +1,9 @@
-"use client";
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import Cookies from "js-cookie";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode"
+import { useNavigate } from "react-router-dom";
 
 // Define user type
 type User = {
@@ -21,7 +21,7 @@ type AuthContextType = {
   isAuthenticated: boolean;
 };
 
-// Create context
+// Create context with default values
 const AuthContext = createContext<AuthContextType>({
   user: null,
   isLoading: true,
@@ -30,91 +30,87 @@ const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
 });
 
-// Custom hook
+// Custom hook to use auth context
 export const useAuth = () => useContext(AuthContext);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate()
 
-  // Fetch user if token exists
+  // Check if user is already logged in
   useEffect(() => {
-    const token = Cookies.get("loggedin");
-    if (token) {
-      axios
-        .get("http://localhost:5000/api/teams/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((response) => {
-          const team = response.data;
-          setUser({
-            id: team.id,
-            teamid: team.teamid,
-            points: team.points,
-          });
-        })
-        .catch((error) => {
-          console.error("Error fetching user:", error);
-          Cookies.remove("loggedin");
-          setUser(null);
-        })
-        .finally(() => {
-          setIsLoading(false);
+    const storedUser = Cookies.get("loggedin");
+    if (storedUser) {
+      try {
+        const parsedUser: any = jwtDecode(storedUser);
+        console.log(parsedUser);
+        
+        setUser({
+          id: parsedUser.id,
+          teamid: parsedUser.teamId,
+          points: parsedUser.points
         });
-    } else {
-      setIsLoading(false);
+
+      } catch (error) {
+        console.error("Failed to parse stored user:", error);
+        localStorage.removeItem("hackeraUser");
+      }
     }
+    setIsLoading(false);
   }, []);
 
   // Login function
   const login = async (teamid: string, password: string) => {
-    setIsLoading(true);
+    // Simulate API call
+
     try {
-      const response = await axios.post("http://localhost:5000/api/teams/login", {
-        teamId: teamid,
-        password,
-      });
+      const login_response = await axios.post(
+        "https://hackera-backend.onrender.com/api/teams/login",
+        {
+          teamId: teamid,
+          password,
+        }
+      );
 
-      const token = response.data.token;
-      const id = response.data.teamId;
-
-      if (!token || !id) {
+      if (!login_response) {
         toast({
           title: "Error",
-          description: "Invalid credentials!",
+          description: "Try Again! Enter correct credentials",
           variant: "destructive",
         });
-        setIsLoading(false);
-        return;
       }
 
-      // Save token
-      Cookies.set("loggedin", token, { expires: 1, secure: true, path: "/" });
+      console.log("login response is: ", login_response);
+      const token = login_response.data.token;
 
-      // Fetch team profile after login
-      const profileRes = await axios.get("http://localhost:5000/api/teams/profile", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      if (token) {
+        console.log("token is: ", token);
+        Cookies.set("loggedin", token, { expires: 1, secure: true, path: "/" });
+      }
 
-      const team = profileRes.data;
-
+      const parsedUser: any = jwtDecode(token);
+      console.log(parsedUser);
+      
       setUser({
-        id: team.id,
-        teamid: team.teamid,
-        points: team.points,
+        id: parsedUser.id,
+        teamid: parsedUser.teamId,
+        points: parsedUser.points
       });
 
       toast({
-        title: "Success",
-        description: "Logged in successfully!",
+        title: "success",
+        description: "logged in!",
         variant: "default",
       });
+
     } catch (err) {
-      console.error(err);
       toast({
         title: "Error",
-        description: "Login failed!",
+        description: "Try Again! Enter correct credentials",
         variant: "destructive",
       });
     } finally {
@@ -126,6 +122,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = () => {
     setUser(null);
     Cookies.remove("loggedin");
+    navigate("/")
     toast({
       title: "Logged Out",
       description: "You have been successfully logged out",

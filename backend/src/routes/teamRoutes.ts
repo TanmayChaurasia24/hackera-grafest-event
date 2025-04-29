@@ -51,7 +51,7 @@ router.post("/login", async (req, res) => {
 
     // Generate JWT token for session management
     const token = jwt.sign(
-      { teamId: team._id, teamName: team.teamId },
+      { id: team._id, teamId: team.teamId, points: team.points },
       process.env.JWT_SECRET || "secret",
       { expiresIn: "6h" }
     );

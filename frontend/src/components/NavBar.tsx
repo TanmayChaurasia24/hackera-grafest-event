@@ -15,23 +15,21 @@ const NavBar: React.FC = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  const [lg, setlg] = useState(false);
-  
+
   const [navlinks, setNavlinks] = useState<NavLink[]>([]);
   
   useEffect(() => {
-    const isLoggedIn = Cookies.get("loggedin");
   
-    if (isLoggedIn) {
-      setlg(true);
+    if (isAuthenticated) {
       setNavlinks([
         { name: "Challenges", href: "/challenges", icon: Lock },
         { name: "Leaderboard", href: "/leaderboard", icon: Trophy },
       ]);
+      
     } else {
       setNavlinks([]);
     }
-  }, []);
+  }, [isAuthenticated,user,logout]);
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -68,7 +66,7 @@ const NavBar: React.FC = () => {
             </Link>
           ))}
 
-          {lg ? (
+          {isAuthenticated ? (
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm body-content">
                 <User className="h-4 w-4" />

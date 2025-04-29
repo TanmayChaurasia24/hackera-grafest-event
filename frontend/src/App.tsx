@@ -14,6 +14,7 @@ import NotFound from "./pages/NotFound";
 
 // Components
 import NavBar from "./components/NavBar";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -24,9 +25,30 @@ const AppContent = () => {
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/challenges" element={<ChallengesPage />} />
-          <Route path="/challenges/:id" element={<ChallengePage />} />
-          <Route path="/leaderboard" element={<LeaderboardPage />} />
+          <Route
+            path="/challenges"
+            element={
+              <ProtectedRoute>
+                <ChallengesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/challenges/:id"
+            element={
+              <ProtectedRoute>
+                <ChallengePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/leaderboard"
+            element={
+              <ProtectedRoute>
+                <LeaderboardPage />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
@@ -36,15 +58,15 @@ const AppContent = () => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
           <AppContent />
-        </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
+        </TooltipProvider>
+      </AuthProvider>
+    </BrowserRouter>
   </QueryClientProvider>
 );
 

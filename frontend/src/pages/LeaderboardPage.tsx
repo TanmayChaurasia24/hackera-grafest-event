@@ -15,7 +15,7 @@ type LeaderboardUser = {
 const LeaderboardPage: React.FC = () => {
   const fetch_leaderboard = async () => {
     const leaderboard_backend_response = await axios.get(
-      "http://localhost:5000/api/questions/points/"
+      "https://hackera-backend.onrender.com/api/questions/points/"
     );
     // console.log("current leader borad is: ", leaderboard_backend_response);
 
