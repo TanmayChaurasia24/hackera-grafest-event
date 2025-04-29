@@ -8,9 +8,9 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Shield, AlertTriangle } from 'lucide-react';
-
+import Cookies from "js-cookie"
 const LoginForm: React.FC = () => {
-  const [username, setUsername] = useState('');
+  const [teamid, setteamid] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const { login, isLoading } = useAuth();
@@ -20,17 +20,15 @@ const LoginForm: React.FC = () => {
     e.preventDefault();
     setError(null);
     
-    if (!username.trim() || !password.trim()) {
+    if (!teamid.trim() || !password.trim()) {
       setError('Username and password are required');
       return;
     }
 
     try {
-      await login(username, password);
-      // Check if successfully logged in after login attempt
-      // This will work because the login function updates the auth context
+      await login(teamid, password);
       setTimeout(() => {
-        if (localStorage.getItem('hackeraUser')) {
+        if (Cookies.get('loggedin')) {
           navigate('/challenges');
         }
       }, 100);
@@ -60,14 +58,14 @@ const LoginForm: React.FC = () => {
           )}
           
           <div className="space-y-2">
-            <Label htmlFor="username">Username</Label>
+            <Label htmlFor="username">Team Id</Label>
             <Input
-              id="username"
-              placeholder="your-username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              id="teamid"
+              placeholder="your-teamID"
+              value={teamid}
+              onChange={(e) => setteamid(e.target.value)}
               className="bg-background/50 border-border focus:border-secondary"
-              autoComplete="username"
+              autoComplete="teamid"
               required
             />
           </div>

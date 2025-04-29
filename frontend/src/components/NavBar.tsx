@@ -1,26 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Menu, Lock, Trophy, LogOut, User } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import logo from "@/images/hackera_logo.png";
-
+import Cookies from "js-cookie";
+type NavLink = {
+  name: string;
+  href: string;
+  icon: React.ElementType;
+};
 const NavBar: React.FC = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-
-  // Define navigation links based on authentication status
-  const navLinks = isAuthenticated
-    ? [
+  const [lg, setlg] = useState(false);
+  
+  const [navlinks, setNavlinks] = useState<NavLink[]>([]);
+  
+  useEffect(() => {
+    const isLoggedIn = Cookies.get("loggedin");
+  
+    if (isLoggedIn) {
+      setlg(true);
+      setNavlinks([
         { name: "Challenges", href: "/challenges", icon: Lock },
         { name: "Leaderboard", href: "/leaderboard", icon: Trophy },
-      ]
-    : [
-        { name: "Challenges", href: "/challenges", icon: Lock },
-        { name: "Leaderboard", href: "/leaderboard", icon: Trophy },
-      ];
+      ]);
+    } else {
+      setNavlinks([]);
+    }
+  }, []);
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -42,7 +53,7 @@ const NavBar: React.FC = () => {
 
         {/* Desktop navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          {navLinks.map((link) => (
+          {navlinks.map((link) => (
             <Link
               key={link.name}
               to={link.href}
@@ -57,12 +68,12 @@ const NavBar: React.FC = () => {
             </Link>
           ))}
 
-          {isAuthenticated ? (
+          {lg ? (
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm body-content">
                 <User className="h-4 w-4" />
                 <span className="text-secondary font-medium">
-                  {user?.username}
+                  {user?.teamid}
                 </span>
                 <span className="text-muted-foreground">
                   ({user?.points} pts)
@@ -98,7 +109,7 @@ const NavBar: React.FC = () => {
             className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-l border-border/40"
           >
             <nav className="flex flex-col gap-4 mt-8">
-              {navLinks.map((link) => (
+              {navlinks.map((link) => (
                 <Link
                   key={link.name}
                   to={link.href}
@@ -119,7 +130,7 @@ const NavBar: React.FC = () => {
                   <div className="flex items-center gap-2 p-2 mt-2 border-t border-border">
                     <User className="h-4 w-4 text-secondary" />
                     <span className="text-secondary font-medium">
-                      {user?.username}
+                      {user?.teamid}
                     </span>
                     <span className="text-muted-foreground">
                       ({user?.points} pts)

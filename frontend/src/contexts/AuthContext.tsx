@@ -1,11 +1,14 @@
+"use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import Cookies from "js-cookie";
+import axios from "axios";
 
 // Define user type
 type User = {
   id: string;
-  username: string;
+  teamid: string;
   points: number;
 };
 
@@ -13,12 +16,12 @@ type User = {
 type AuthContextType = {
   user: User | null;
   isLoading: boolean;
-  login: (username: string, password: string) => Promise<void>;
+  login: (teamid: string, password: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
 };
 
-// Create context with default values
+// Create context
 const AuthContext = createContext<AuthContextType>({
   user: null,
   isLoading: true,
@@ -27,75 +30,91 @@ const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
 });
 
-// Custom hook to use auth context
+// Custom hook
 export const useAuth = () => useContext(AuthContext);
-
-// Mock users for demo purposes
-const MOCK_USERS = [
-  { id: '1', username: 'hackerman', password: 'password123', points: 1500 },
-  { id: '2', username: 'neo', password: 'matrix', points: 1200 },
-  { id: '3', username: 'admin', password: 'admin', points: 950 },
-  { id: '4', username: 'test', password: 'test', points: 800 },
-];
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  // Check if user is already logged in
+  // Fetch user if token exists
   useEffect(() => {
-    const storedUser = localStorage.getItem('hackeraUser');
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-      } catch (error) {
-        console.error('Failed to parse stored user:', error);
-        localStorage.removeItem('hackeraUser');
-      }
+    const token = Cookies.get("loggedin");
+    if (token) {
+      axios
+        .get("http://localhost:5000/api/teams/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          const team = response.data;
+          setUser({
+            id: team.id,
+            teamid: team.teamid,
+            points: team.points,
+          });
+        })
+        .catch((error) => {
+          console.error("Error fetching user:", error);
+          Cookies.remove("loggedin");
+          setUser(null);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    } else {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, []);
 
   // Login function
-  const login = async (username: string, password: string) => {
-    // Simulate API call
+  const login = async (teamid: string, password: string) => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Find user in mock data
-      const foundUser = MOCK_USERS.find(
-        u => u.username === username && u.password === password
-      );
-      
-      if (foundUser) {
-        // Create user object without password
-        const { password, ...userWithoutPassword } = foundUser;
-        setUser(userWithoutPassword);
-        localStorage.setItem('hackeraUser', JSON.stringify(userWithoutPassword));
-        
+      const response = await axios.post("http://localhost:5000/api/teams/login", {
+        teamId: teamid,
+        password,
+      });
+
+      const token = response.data.token;
+      const id = response.data.teamId;
+
+      if (!token || !id) {
         toast({
-          title: "Login Successful",
-          description: `Welcome back, ${username}!`,
-          variant: "default",
+          title: "Error",
+          description: "Invalid credentials!",
+          variant: "destructive",
         });
+        setIsLoading(false);
         return;
       }
-      
-      toast({
-        title: "Login Failed",
-        description: "Invalid username or password",
-        variant: "destructive",
+
+      // Save token
+      Cookies.set("loggedin", token, { expires: 1, secure: true, path: "/" });
+
+      // Fetch team profile after login
+      const profileRes = await axios.get("http://localhost:5000/api/teams/profile", {
+        headers: { Authorization: `Bearer ${token}` },
       });
-    } catch (error) {
-      console.error('Login error:', error);
+
+      const team = profileRes.data;
+
+      setUser({
+        id: team.id,
+        teamid: team.teamid,
+        points: team.points,
+      });
+
+      toast({
+        title: "Success",
+        description: "Logged in successfully!",
+        variant: "default",
+      });
+    } catch (err) {
+      console.error(err);
       toast({
         title: "Error",
-        description: "An unexpected error occurred",
+        description: "Login failed!",
         variant: "destructive",
       });
     } finally {
@@ -106,7 +125,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Logout function
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('hackeraUser');
+    Cookies.remove("loggedin");
     toast({
       title: "Logged Out",
       description: "You have been successfully logged out",
@@ -114,13 +133,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider 
-      value={{ 
-        user, 
-        isLoading, 
-        login, 
-        logout, 
-        isAuthenticated: !!user 
+    <AuthContext.Provider
+      value={{
+        user,
+        isLoading,
+        login,
+        logout,
+        isAuthenticated: !!user,
       }}
     >
       {children}

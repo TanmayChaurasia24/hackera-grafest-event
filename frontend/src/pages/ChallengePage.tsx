@@ -56,7 +56,7 @@ const ChallengePage: React.FC = () => {
 
       try {
         const response = await fetch(
-          `https://hackera-backend.onrender.com/api/questions/team/${teamId}/day/${day}/round/${id}`
+          `http://localhost:5000/api/questions/team/${teamId}/day/${day}/round/${id}`
         );
         const data = await response.json();
         return data;
@@ -112,7 +112,7 @@ const ChallengePage: React.FC = () => {
 
       // In a real app, you would submit to your backend
       const response: any = await axios.post(
-        "https://hackera-backend.onrender.com/api/questions/submit",
+        "http://localhost:5000/api/questions/submit",
         {
           teamId,
           questionId,
