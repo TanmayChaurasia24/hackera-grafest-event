@@ -64,7 +64,7 @@ const ChallengePage: React.FC = () => {
   const { data: questions, isLoading: questionsLoading } = useQuery({
     queryKey: ["questions", id, teamId],
     queryFn: async () => {
-      const day = 2;
+      const day = 1;
 
       try {
         // console.log("things are: ", day,teamId,id);
