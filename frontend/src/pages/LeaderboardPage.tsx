@@ -36,25 +36,25 @@ const LeaderboardPage: React.FC = () => {
   const renderRankBadge = (rank: number) => {
     if (rank === 1) {
       return (
-        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-yellow-500/20 text-yellow-500 border border-yellow-500/50">
+        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-black text-yellow-500 border border-yellow-500/50">
           <Trophy className="h-4 w-4" />
         </div>
       );
     } else if (rank === 2) {
       return (
-        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-400/20 text-gray-400 border border-gray-400/50">
+        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-black text-gray-400 border border-gray-400/50">
           <Medal className="h-4 w-4" />
         </div>
       );
     } else if (rank === 3) {
       return (
-        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-amber-700/20 text-amber-700 border border-amber-700/50">
+        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-black text-amber-700 border border-amber-700/50">
           <Award className="h-4 w-4" />
         </div>
       );
     } else {
       return (
-        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-muted-foreground border border-border">
+        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-muted text-white border border-border">
           {rank}
         </div>
       );
@@ -68,18 +68,18 @@ const LeaderboardPage: React.FC = () => {
         <header className="mb-10">
           <h1 className="text-3xl font-bold mb-2 text-white">Leaderboard</h1>
           <p className="text-muted-foreground">
-            See how you rank against other participants in the HACK=ERA CTF
+            See how you rank against other participants in the HACK-ERA CTF
             Challenge.
           </p>
         </header>
 
         <Card className="border border-border bg-card/70 backdrop-blur">
           <CardHeader className="pb-2">
-            <CardTitle className="text-xl">Top Hackers</CardTitle>
+            <CardTitle className="text-center text-4xl">Top Hackers</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="overflow-x-auto flex justify-center">
+              <table className="w-[70%]">
                 <thead>
                   <tr className="border-b border-border text-left">
                     <th className="pb-3 pr-4 font-medium text-muted-foreground">
@@ -93,7 +93,7 @@ const LeaderboardPage: React.FC = () => {
                     </th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="">
                   {isLoading ? (
                     <p>Loading...</p>
                   ) : isError ? (
@@ -108,24 +108,114 @@ const LeaderboardPage: React.FC = () => {
                       </td>
                     </tr>
                   ) : (
-                    leaderboard?.slice(0, 10).map((user, index) => (
-                      <tr key={user._id}>
+                    leaderboard?.slice(0, 10).map((user, index: any) => (
+                      (index === 0) ? (
+                        <tr key={user._id} className="bg-gradient-to-r from-[#FFD700] to-black">
                         <td className="py-4 pr-4">
-                          <div className="flex items-center">
+                          <div className="flex items-center pl-4">
                             {renderRankBadge(index + 1)}
                           </div>
                         </td>
                         <td className="py-4 px-4">
                           <div className="flex items-center gap-2">
-                            <span className={`font-medium text-primary`}>
-                              {user.teamId}
-                            </span>
+                            
+                              <span className={`font-medium text-black`}>
+                                {user.teamId}
+                              </span>
+                            
                           </div>
                         </td>
-                        <td className="py-4 px-4 text-right font-mono text-secondary font-medium">
+                        <td className="py-4 px-4 text-right font-mono text-white font-medium">
                           {user.points} pts
                         </td>
                       </tr>
+                      ) : (
+                        index === 1 ? (
+                          <tr key={user._id} className="bg-gradient-to-r from-[#C0C0C0] to-black">
+                          <td className="py-4 pr-4">
+                            <div className="flex items-center pl-4">
+                              {renderRankBadge(index + 1)}
+                            </div>
+                          </td>
+                          <td className="py-4 px-4">
+                            <div className="flex items-center gap-2">
+                              
+                                <span className={`font-medium text-black`}>
+                                  {user.teamId}
+                                </span>
+                              
+                            </div>
+                          </td>
+                          <td className="py-4 px-4 text-right font-mono text-white font-medium">
+                            {user.points} pts
+                          </td>
+                        </tr>
+                        ) : (
+                          index === 2 ? (
+                            <tr key={user._id} className="bg-gradient-to-r from-[#CD7F32] via-[#CD7F32] to-black">
+                            <td className="py-4 pr-4">
+                              <div className="flex items-center pl-4">
+                                {renderRankBadge(index + 1)}
+                              </div>
+                            </td>
+                            <td className="py-4 px-4">
+                              <div className="flex items-center gap-2">
+                                
+                                  <span className={`font-medium text-black`}>
+                                    {user.teamId}
+                                  </span>
+                                
+                              </div>
+                            </td>
+                            <td className="py-4 pr-4 text-right font-mono text-white font-medium">
+                              {user.points} pts
+                            </td>
+                          </tr>
+                          ) : (
+                            index%2 === 0 ? (
+                              <tr key={user._id} className="bg-gray-700">
+                            <td className="py-4 pr-4">
+                              <div className="flex items-center pl-4">
+                                {renderRankBadge(index + 1)}
+                              </div>
+                            </td>
+                            <td className="py-4 px-4">
+                              <div className="flex items-center gap-2">
+                                
+                                  <span className={`font-medium text-white`}>
+                                    {user.teamId}
+                                  </span>
+                                
+                              </div>
+                            </td>
+                            <td className="py-4 px-4 text-right font-mono text-white font-medium">
+                              {user.points} pts
+                            </td>
+                          </tr>
+                            ) : (
+                              <tr key={user._id}>
+                            <td className="py-4 pr-4">
+                              <div className="flex items-center pl-4">
+                                {renderRankBadge(index + 1)}
+                              </div>
+                            </td>
+                            <td className="py-4 px-4">
+                              <div className="flex items-center gap-2">
+                                
+                                  <span className={`font-medium text-white`}>
+                                    {user.teamId}
+                                  </span>
+                                
+                              </div>
+                            </td>
+                            <td className="py-4 px-4 text-right font-mono text-white font-medium">
+                              {user.points} pts
+                            </td>
+                          </tr>
+                            )
+                          )
+                        )
+                      )
                     ))
                   )}
                 </tbody>

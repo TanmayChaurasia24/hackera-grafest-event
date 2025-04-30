@@ -6,7 +6,6 @@ import LoginForm from '@/components/LoginForm';
 import { Button } from '@/components/ui/button';
 import MatrixBackground from '@/components/MatrixBackground';
 import { Card, CardContent } from "@/components/ui/card";
-import { Lock, Code, Bug, Shield } from "lucide-react";
 import Banner from "@/images/HackEra_Banner_updated.jpg";
 
 const LandingPage: React.FC = () => {
@@ -121,7 +120,7 @@ const LandingPage: React.FC = () => {
       
       <footer className="bg-background border-t border-border py-6">
         <div className="container mx-auto px-4 text-center text-muted-foreground body-content">
-          <p>© {new Date().getFullYear()} HACK=ERA CTF Challenge | Powered by Grafest, Graphic Era Deemed University</p>
+          <p>© {new Date().getFullYear()} HACK-ERA CTF Challenge | Powered by AWS, Graphic Era Deemed University</p>
         </div>
       </footer>
     </div>
