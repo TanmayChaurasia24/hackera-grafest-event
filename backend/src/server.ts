@@ -3,6 +3,7 @@ import cors from "cors";
 import { connectDB } from "./config/db";
 import teamRoutes from "./routes/teamRoutes";
 import questionRoutes from "./routes/questionRoutes";
+import resetRoutes from "./routes/resetRoutes"
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -17,6 +18,7 @@ connectDB();
 // Routes
 app.use("/api/teams", teamRoutes);
 app.use("/api/questions", questionRoutes);
+app.use("/api/reset", resetRoutes);
 
 // Start server
 app.listen(PORT, () => {
