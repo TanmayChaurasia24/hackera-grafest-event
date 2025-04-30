@@ -6,6 +6,7 @@ type Challenge = {
   description: string;
   points: number;
   icon: React.ElementType;
+  difficulty: string;
 };
 export const day1_challanges: Challenge[] = [
   {
@@ -23,8 +24,9 @@ export const day1_challanges: Challenge[] = [
 
     Try OSINT to reveal the answers.
     `,
-    points: 100,
+    points: 200,
     icon: Code,
+    difficulty: "Easy"
   },
   {
     id: "2",
@@ -38,9 +40,12 @@ export const day1_challanges: Challenge[] = [
 
     Your mission:
     Analyze the .pcap, locate the tapped TCP conversation, and extract the flag mentioned in their secret exchange.
+
+    Also Download the file
     `,
-    points: 100,
+    points: 400,
     icon: Code,
+    difficulty: "Medium"
   },
   {
     id: "3",
@@ -63,7 +68,8 @@ export const day1_challanges: Challenge[] = [
     But it's protected, deeply. Only someone who truly thinks like Walter can uncover it.
      
     `,
-    points: 100,
+    points: 200,
     icon: Code,
+    difficulty: "Hard"
   }
 ];

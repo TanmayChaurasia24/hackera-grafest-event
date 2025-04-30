@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
@@ -14,13 +13,20 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Award, Timer, Server, Key, CheckCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  Award,
+  Timer,
+  Server,
+  Key,
+  CheckCircle,
+} from "lucide-react";
 import MatrixBackground from "@/components/MatrixBackground";
 import { day1_challanges } from "@/day1_challanges";
-// import { day2_challanges } from "@/day2_challanges";
+import { day2_challanges } from "@/day2_challanges";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import Cookies from "js-cookie"
+import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 
 // Define Question type for the backend response
@@ -51,7 +57,7 @@ const ChallengePage: React.FC = () => {
   const queryClient = useQueryClient();
 
   // Decode JWT to get team ID
-  const payload: any = jwtDecode(Cookies.get('loggedin'))
+  const payload: any = jwtDecode(Cookies.get("loggedin"));
   const teamId = payload.teamId;
 
   // Use React Query to fetch questions from the backend
@@ -75,9 +81,9 @@ const ChallengePage: React.FC = () => {
   });
 
   useEffect(() => {
-    // Find the challenge from both day1 and day2 challenges
-    console.log("ans: ", answers);
-    
+    // // Find the challenge from both day1 and day2 challenges
+    // console.log("ans: ", answers);
+
     setLoading(true);
     setTimeout(() => {
       if (id) {
@@ -106,7 +112,7 @@ const ChallengePage: React.FC = () => {
   const handleSubmitAnswer = async (question: Question) => {
     const solution = answers[question._id];
     const questionId = question.questionId;
-    
+
     if (!solution?.trim()) {
       toast({
         title: "Error",
@@ -130,13 +136,12 @@ const ChallengePage: React.FC = () => {
           },
         }
       );
-      
+
       const data = response.data;
       console.log("data is: ", data);
-      
+
       const isCorrect = data.isCorrect;
       console.log("data answer is: ", data.solution);
-      
 
       if (isCorrect) {
         toast({
@@ -144,9 +149,9 @@ const ChallengePage: React.FC = () => {
           description: `You've earned points for this question!`,
           variant: "default",
         });
-        
+
         // Update the UI immediately without waiting for refetch
-        setAnswers(prev => ({
+        setAnswers((prev) => ({
           ...prev,
           [question._id]: data.solution,
         }));
@@ -249,21 +254,25 @@ const ChallengePage: React.FC = () => {
           </h1>
           <div className="lg:col-span-2 space-y-6">
             <Card className="border border-border bg-card/70 backdrop-blur">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xl">{challenge.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex justify-between items-start mb-2">
-                  <Badge variant="secondary">{challenge.points} pts</Badge>
-                </div>
-                <div className="flex items-center gap-2">
-                  <challenge.icon className="h-5 w-5 text-secondary" />
-                  <CardTitle className="text-lg">
-                    {challenge.description}
-                  </CardTitle>
+              <CardContent className="flex items-center mt-4">
+                <div className="flex justify-between items-center w-full">
+                  <div className="flex items-center gap-2">
+                    <challenge.icon className="h-5 w-5 text-secondary" />
+                    <CardTitle className="text-lg">
+                      {challenge.description}
+                    </CardTitle>
+                  </div>
+                  {challenge.title === "Tapped Conversation" ||
+                  challenge.title === "CipherLock" ||
+                  challenge.title === "Echoes of the Forgotten" ? (
+                    <Button className="bg-secondary hover:bg-secondary/90">
+                      Download File
+                    </Button>
+                  ) : null}
                 </div>
               </CardContent>
             </Card>
+
             <Card className="border border-border bg-card/70 backdrop-blur">
               <CardHeader className="pb-2">
                 <CardTitle className="text-xl">Problem Statement</CardTitle>
@@ -292,10 +301,16 @@ const ChallengePage: React.FC = () => {
                   <div className="flex justify-between items-start mb-2">
                     <Badge
                       variant="outline"
-                      className={`${question.isCorrect ? "bg-green-500/20 text-green-500" : "bg-blue-500/20 text-blue-500"}`}
+                      className={`${
+                        question.isCorrect
+                          ? "bg-green-500/20 text-green-500"
+                          : "bg-blue-500/20 text-blue-500"
+                      }`}
                     >
                       Question {question.questionId}
-                      {question.isCorrect && <CheckCircle className="ml-1 h-3 w-3" />}
+                      {question.isCorrect && (
+                        <CheckCircle className="ml-1 h-3 w-3" />
+                      )}
                     </Badge>
                     <Badge variant="secondary">10 pts</Badge>
                   </div>
@@ -325,8 +340,8 @@ const ChallengePage: React.FC = () => {
                   <Button
                     variant={question.isCorrect ? "secondary" : "default"}
                     className={`${
-                      question.isCorrect 
-                        ? "bg-green-500 hover:bg-green-500 text-white cursor-not-allowed opacity-80" 
+                      question.isCorrect
+                        ? "bg-green-500 hover:bg-green-500 text-white cursor-not-allowed opacity-80"
                         : "bg-primary hover:bg-primary/90 text-primary-foreground"
                     } whitespace-nowrap`}
                     onClick={() => handleSubmitAnswer(question)}
