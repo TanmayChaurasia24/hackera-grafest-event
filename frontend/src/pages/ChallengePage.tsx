@@ -347,7 +347,7 @@ const ChallengePage: React.FC = () => {
                         <CheckCircle className="ml-1 h-3 w-3" />
                       )}
                     </Badge>
-                    <Badge variant="secondary">10 pts</Badge>
+                    <Badge variant="secondary">100 pts</Badge>
                   </div>
                   <div className="flex items-start gap-2">
                     <Key className="h-5 w-5 mt-0.5 text-secondary" />
