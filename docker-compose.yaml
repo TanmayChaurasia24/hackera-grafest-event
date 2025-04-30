@@ -1,0 +1,50 @@
+
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: hackera-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - hackera-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: hackera-backend
+    
+    restart: always
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+    env_file:
+      - ./backend/.env
+    networks:
+      - hackera-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: hackera-frontend
+    restart: always
+    ports:
+      - "8081:8080"
+    depends_on:
+      - backend
+    networks:
+      - hackera-network
+
+        
+networks:
+  hackera-network:
+
+volumes:
+  mongodb_data:
