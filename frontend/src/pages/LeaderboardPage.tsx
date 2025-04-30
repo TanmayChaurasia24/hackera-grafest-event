@@ -95,9 +95,17 @@ const LeaderboardPage: React.FC = () => {
                 </thead>
                 <tbody className="">
                   {isLoading ? (
-                    <p>Loading...</p>
+                    <tr>
+                      <td colSpan={5} className="py-6 text-center">
+                        <p>Loading...</p>
+                      </td>
+                    </tr>
                   ) : isError ? (
-                    <p>Error Loading LeaderBoard...</p>
+                    <tr>
+                      <td colSpan={5} className="py-6 text-center">
+                        <p>Error Loading LeaderBoard...</p>
+                      </td>
+                    </tr>
                   ) : leaderboard.length === 0 ? (
                     <tr>
                       <td
@@ -108,115 +116,48 @@ const LeaderboardPage: React.FC = () => {
                       </td>
                     </tr>
                   ) : (
-                    leaderboard?.slice(0, 10).map((user, index: any) => (
-                      (index === 0) ? (
-                        <tr key={user._id} className="bg-gradient-to-r from-[#FFD700] to-black">
-                        <td className="py-4 pr-4">
-                          <div className="flex items-center pl-4">
-                            {renderRankBadge(index + 1)}
-                          </div>
-                        </td>
-                        <td className="py-4 px-4">
-                          <div className="flex items-center gap-2">
-                            
-                              <span className={`font-medium text-black`}>
-                                {user.teamId}
-                              </span>
-                            
-                          </div>
-                        </td>
-                        <td className="py-4 px-4 text-right font-mono text-white font-medium">
-                          {user.points} pts
-                        </td>
-                      </tr>
-                      ) : (
-                        index === 1 ? (
-                          <tr key={user._id} className="bg-gradient-to-r from-[#C0C0C0] to-black">
-                          <td className="py-4 pr-4">
-                            <div className="flex items-center pl-4">
-                              {renderRankBadge(index + 1)}
+                    leaderboard.slice(0, 10).map((user, index) => {
+                      let bgClass = "";
+                      let textColor = "text-white";
+
+                      if (index === 0) {
+                        bgClass = "bg-gradient-to-r from-[#FFD700] to-black";
+                        textColor = "text-black";
+                      } else if (index === 1) {
+                        bgClass = "bg-gradient-to-r from-[#C0C0C0] to-black";
+                        textColor = "text-black";
+                      } else if (index === 2) {
+                        bgClass =
+                          "bg-gradient-to-r from-[#CD7F32] via-[#CD7F32] to-black";
+                        textColor = "text-black";
+                      } else if (index % 2 === 0) {
+                        bgClass = "bg-gray-700";
+                      }
+
+                      return (
+                        <tr key={user._id}>
+                          <td colSpan={5} className="pb-4">
+                            <div
+                              className={`rounded-xl overflow-hidden shadow-md ${bgClass}`}
+                            >
+                              <div className="flex items-center justify-between px-4 py-4">
+                                <div className="flex items-center gap-4">
+                                  {renderRankBadge(index + 1)}
+                                  <span className={`font-medium ${textColor}`}>
+                                    {user.teamId}
+                                  </span>
+                                </div>
+                                <div
+                                  className={`font-mono font-medium ${textColor}`}
+                                >
+                                  {user.points} pts
+                                </div>
+                              </div>
                             </div>
-                          </td>
-                          <td className="py-4 px-4">
-                            <div className="flex items-center gap-2">
-                              
-                                <span className={`font-medium text-black`}>
-                                  {user.teamId}
-                                </span>
-                              
-                            </div>
-                          </td>
-                          <td className="py-4 px-4 text-right font-mono text-white font-medium">
-                            {user.points} pts
                           </td>
                         </tr>
-                        ) : (
-                          index === 2 ? (
-                            <tr key={user._id} className="bg-gradient-to-r from-[#CD7F32] via-[#CD7F32] to-black">
-                            <td className="py-4 pr-4">
-                              <div className="flex items-center pl-4">
-                                {renderRankBadge(index + 1)}
-                              </div>
-                            </td>
-                            <td className="py-4 px-4">
-                              <div className="flex items-center gap-2">
-                                
-                                  <span className={`font-medium text-black`}>
-                                    {user.teamId}
-                                  </span>
-                                
-                              </div>
-                            </td>
-                            <td className="py-4 pr-4 text-right font-mono text-white font-medium">
-                              {user.points} pts
-                            </td>
-                          </tr>
-                          ) : (
-                            index%2 === 0 ? (
-                              <tr key={user._id} className="bg-gray-700">
-                            <td className="py-4 pr-4">
-                              <div className="flex items-center pl-4">
-                                {renderRankBadge(index + 1)}
-                              </div>
-                            </td>
-                            <td className="py-4 px-4">
-                              <div className="flex items-center gap-2">
-                                
-                                  <span className={`font-medium text-white`}>
-                                    {user.teamId}
-                                  </span>
-                                
-                              </div>
-                            </td>
-                            <td className="py-4 px-4 text-right font-mono text-white font-medium">
-                              {user.points} pts
-                            </td>
-                          </tr>
-                            ) : (
-                              <tr key={user._id}>
-                            <td className="py-4 pr-4">
-                              <div className="flex items-center pl-4">
-                                {renderRankBadge(index + 1)}
-                              </div>
-                            </td>
-                            <td className="py-4 px-4">
-                              <div className="flex items-center gap-2">
-                                
-                                  <span className={`font-medium text-white`}>
-                                    {user.teamId}
-                                  </span>
-                                
-                              </div>
-                            </td>
-                            <td className="py-4 px-4 text-right font-mono text-white font-medium">
-                              {user.points} pts
-                            </td>
-                          </tr>
-                            )
-                          )
-                        )
-                      )
-                    ))
+                      );
+                    })
                   )}
                 </tbody>
               </table>
