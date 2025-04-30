@@ -72,8 +72,9 @@ const LeaderboardPage: React.FC = () => {
             Challenge.
           </p>
         </header>
-
-        <Card className="border border-border bg-card/70 backdrop-blur">
+        <div className="bg-gradient-to-r from-purple-600 via-cyan-400 to-pink-400 p-[1px] rounded-lg">
+          
+        <Card className="border border-border bg-card/90 backdrop-blur">
           <CardHeader className="pb-2">
             <CardTitle className="text-center text-4xl">Top Hackers</CardTitle>
           </CardHeader>
@@ -82,11 +83,11 @@ const LeaderboardPage: React.FC = () => {
               <table className="w-[70%]">
                 <thead>
                   <tr className="border-b border-border text-left">
-                    <th className="pb-3 pr-4 font-medium text-muted-foreground">
+                    {/* <th className="pb-3 pr-4 font-medium text-muted-foreground">
                       Rank
-                    </th>
-                    <th className="pb-3 px-4 font-medium text-muted-foreground">
-                      User
+                    </th> */}
+                    <th className="pb-3 px-20 font-medium text-muted-foreground">
+                      Team-Id
                     </th>
                     <th className="pb-3 px-4 font-medium text-muted-foreground text-right">
                       Points
@@ -134,7 +135,7 @@ const LeaderboardPage: React.FC = () => {
                           "bg-gradient-to-r from-[#CD7F32] via-[#CD7F32] to-black";
                         textColor = "text-white";
                         teamColor = "text-black";
-                      } else if (index % 2 === 0) {
+                      } else if (index % 2 === 1) {
                         bgClass = "bg-gray-700";
                       }
 
@@ -168,6 +169,7 @@ const LeaderboardPage: React.FC = () => {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );
