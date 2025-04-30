@@ -119,17 +119,21 @@ const LeaderboardPage: React.FC = () => {
                     leaderboard.slice(0, 10).map((user, index) => {
                       let bgClass = "";
                       let textColor = "text-white";
+                      let teamColor = "text-white";
 
                       if (index === 0) {
                         bgClass = "bg-gradient-to-r from-[#FFD700] to-black";
-                        textColor = "text-black";
+                        textColor = "text-white";
+                        teamColor = "text-black";
                       } else if (index === 1) {
                         bgClass = "bg-gradient-to-r from-[#C0C0C0] to-black";
-                        textColor = "text-black";
+                        textColor = "text-white";
+                        teamColor = "text-black";
                       } else if (index === 2) {
                         bgClass =
                           "bg-gradient-to-r from-[#CD7F32] via-[#CD7F32] to-black";
-                        textColor = "text-black";
+                        textColor = "text-white";
+                        teamColor = "text-black";
                       } else if (index % 2 === 0) {
                         bgClass = "bg-gray-700";
                       }
@@ -143,7 +147,7 @@ const LeaderboardPage: React.FC = () => {
                               <div className="flex items-center justify-between px-4 py-4">
                                 <div className="flex items-center gap-4">
                                   {renderRankBadge(index + 1)}
-                                  <span className={`font-medium ${textColor}`}>
+                                  <span className={`font-medium ${teamColor }`}>
                                     {user.teamId}
                                   </span>
                                 </div>
