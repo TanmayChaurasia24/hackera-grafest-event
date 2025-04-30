@@ -29,6 +29,7 @@ services:
     networks:
       - hackera-network
 
+
   frontend:
     build:
       context: ./frontend
@@ -36,7 +37,7 @@ services:
     container_name: hackera-frontend
     restart: always
     ports:
-      - "8081:8080"
+      - "80:8080"
     depends_on:
       - backend
     networks:
