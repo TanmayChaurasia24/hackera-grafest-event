@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import MatrixBackground from "@/components/MatrixBackground";
 import { useToast } from "@/hooks/use-toast";
 import { day1_challanges } from "@/day1_challanges";
-import { day2_challanges } from "@/day2_challanges";
+// import { day2_challanges } from "@/day2_challanges";
 
 const ChallengesPage: React.FC = () => {
   const { toast } = useToast();

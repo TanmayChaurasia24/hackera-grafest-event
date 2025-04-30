@@ -12,7 +12,7 @@ type Challenge = {
 
 export const day2_challanges: Challenge[] = [
   {
-    id: "4", // Changed from "1" to "4" to avoid ID conflicts with day1_challanges
+    id: "1", // Changed from "1" to "4" to avoid ID conflicts with day1_challanges
     title: "CipherLock",
     description: "Crack the key, Expose the Hidden.",
     problem_statement: `In the shadowy realm of digital espionage, a high-value target has secured sensitive information behind an unconventional encryption system.
@@ -33,7 +33,7 @@ export const day2_challanges: Challenge[] = [
     difficulty: "Medium",
   },
   {
-    id: "5", // Changed from "2" to "5"
+    id: "2", // Changed from "2" to "5"
     title: "Echoes of the Forgotten",
     description: "Extract data which is inside the waveforms",
     problem_statement: `An anonymous source has provided us with an audio file that appears innocent at first listen - ambient noise, perhaps electronic background static. 
@@ -54,7 +54,7 @@ export const day2_challanges: Challenge[] = [
     difficulty: "Medium",
   },
   {
-    id: "6", // Changed from "3" to "6"
+    id: "3", // Changed from "3" to "6"
     title: "Operation Blackout",
     description:
       "Infiltrate, Exploit, Expose: Can you uncover the secrets before they vanish Forever?",

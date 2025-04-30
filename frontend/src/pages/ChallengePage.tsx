@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import MatrixBackground from "@/components/MatrixBackground";
 import { day1_challanges } from "@/day1_challanges";
-import { day2_challanges } from "@/day2_challanges";
+// import { day2_challanges } from "@/day2_challanges";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -67,10 +67,20 @@ const ChallengePage: React.FC = () => {
       const day = 1;
 
       try {
-        const response = await fetch(
-          `http://localhost:5000/api/questions/team/${teamId}/day/${day}/round/${id}`
+        // console.log("things are: ", day,teamId,id);
+        console.log(Cookies.get('loggedin'));
+
+        const response: any = await axios.get(
+          `https://hackera-backend.onrender.com/api/questions/team/${teamId}/day/${day}/round/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${Cookies.get("loggedin")}`,
+            },
+          }
         );
-        const data = await response.json();
+        const data = await response.data;
+        // console.log(data);
+
         return data;
       } catch (error) {
         console.error("Error fetching questions:", error);
@@ -123,8 +133,10 @@ const ChallengePage: React.FC = () => {
     }
 
     try {
+      
+      
       const response = await axios.post(
-        "http://localhost:5000/api/questions/submit",
+        "https://hackera-backend.onrender.com/api/questions/submit",
         {
           teamId,
           questionId,
@@ -133,6 +145,7 @@ const ChallengePage: React.FC = () => {
         {
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${Cookies.get("loggedin")}`,
           },
         }
       );
@@ -209,6 +222,21 @@ const ChallengePage: React.FC = () => {
     );
   }
 
+  const getS3DownloadLink = (title) => {
+    switch (title) {
+      case "Tapped Conversation":
+        return "https://grafest-bucket-neural-nexus-ctf.s3.ap-south-1.amazonaws.com/HACK-ERA-CTF/tapped_conversation.pcapng";
+      case "CipherLock":
+        return "https://grafest-bucket-neural-nexus-ctf.s3.ap-south-1.amazonaws.com/HACK-ERA-CTF/fsociety";
+      case "Echoes of the Forgotten":
+        return "https://grafest-bucket-neural-nexus-ctf.s3.ap-south-1.amazonaws.com/HACK-ERA-CTF/out.wav";
+      default:
+        return undefined;
+    }
+  };
+
+  const s3Link = getS3DownloadLink(challenge.title);
+
   return (
     <div className="min-h-screen">
       <MatrixBackground />
@@ -265,9 +293,16 @@ const ChallengePage: React.FC = () => {
                   {challenge.title === "Tapped Conversation" ||
                   challenge.title === "CipherLock" ||
                   challenge.title === "Echoes of the Forgotten" ? (
-                    <Button className="bg-secondary hover:bg-secondary/90">
-                      Download File
-                    </Button>
+                    <a
+                      href={s3Link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download
+                    >
+                      <Button className="bg-secondary hover:bg-secondary/90">
+                        Download File
+                      </Button>
+                    </a>
                   ) : null}
                 </div>
               </CardContent>

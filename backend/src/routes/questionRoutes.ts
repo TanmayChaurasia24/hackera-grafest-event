@@ -4,12 +4,16 @@ import { Team } from "../models/Team";
 import { Solution } from "../models/Solution";
 import { authenticateToken } from "../middlewares/auth";
 import { Status } from "../models/Status";
+import { submissionLimiter } from "../middlewares/SubmissionLimiter";
+import { submissionslowdown } from "../middlewares/SubmissionSlowdown";
+
 
 const router = express.Router();
 
 // Get questions according the round
 router.get(
   "/team/:teamId/day/:day/round/:round",
+  authenticateToken,
   async (req, res) => {
     try {
       const { teamId, day, round } = req.params;
@@ -45,7 +49,7 @@ router.get(
 );
 
 // Submit a solution
-router.post("/submit", async (req, res) => {
+router.post("/submit",submissionslowdown,submissionLimiter,authenticateToken, async (req, res) => {
   try {
     const { teamId, questionId, solution } = req.body;
 
