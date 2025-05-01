@@ -117,7 +117,7 @@ const LeaderboardPage: React.FC = () => {
                       </td>
                     </tr>
                   ) : (
-                    leaderboard.slice(0, 10).map((user, index) => {
+                    leaderboard.slice(0, 5).map((user, index) => {
                       let bgClass = "";
                       let textColor = "text-white";
                       let teamColor = "text-white";

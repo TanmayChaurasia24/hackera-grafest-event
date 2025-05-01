@@ -10,8 +10,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import MatrixBackground from "@/components/MatrixBackground";
 import { useToast } from "@/hooks/use-toast";
-import { day1_challanges } from "@/day1_challanges";
-// import { day2_challanges } from "@/day2_challanges";
+// import { day1_challanges } from "@/day1_challanges";
+import { day2_challanges } from "@/day2_challanges";
 
 const ChallengesPage: React.FC = () => {
   const { toast } = useToast();
@@ -25,7 +25,7 @@ const ChallengesPage: React.FC = () => {
   }, []);
 
   // Combine both day1 and day2 challenges
-  const allChallenges = [...day1_challanges];
+  const allChallenges = [...day2_challanges];
 
   return (
     <div className="min-h-screen">

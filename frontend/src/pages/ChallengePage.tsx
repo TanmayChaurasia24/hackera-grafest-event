@@ -22,8 +22,8 @@ import {
   CheckCircle,
 } from "lucide-react";
 import MatrixBackground from "@/components/MatrixBackground";
-import { day1_challanges } from "@/day1_challanges";
-// import { day2_challanges } from "@/day2_challanges";
+// import { day1_challanges } from "@/day1_challanges";
+import { day2_challanges } from "@/day2_challanges";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -64,7 +64,7 @@ const ChallengePage: React.FC = () => {
   const { data: questions, isLoading: questionsLoading } = useQuery({
     queryKey: ["questions", id, teamId],
     queryFn: async () => {
-      const day = 1;
+      const day = 2;
 
       try {
         // console.log("things are: ", day,teamId,id);
@@ -98,7 +98,7 @@ const ChallengePage: React.FC = () => {
     setTimeout(() => {
       if (id) {
         // Look for the challenge in both day1 and day2 challenges
-        const allChallenges = [...day1_challanges];
+        const allChallenges = [...day2_challanges];
         const foundChallenge = allChallenges.find((c) => c.id === id);
 
         if (foundChallenge) {
