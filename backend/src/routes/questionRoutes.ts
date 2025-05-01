@@ -53,6 +53,11 @@ router.post("/submit",submissionslowdown,submissionLimiter,authenticateToken, as
   try {
     const { teamId, questionId, solution } = req.body;
 
+    if (!solution || typeof solution !== 'string') {
+      return res.status(400).json({ message: "Invalid or missing solution in request body" });
+    }
+    
+
     // Validate team
     const team = await Team.findOne({ teamId });
     if (!team) {
@@ -110,7 +115,7 @@ router.post("/submit",submissionslowdown,submissionLimiter,authenticateToken, as
     }
 
     // Add points to team
-    await Team.updateOne({ teamId }, { $inc: { points: 10 } });
+    await Team.updateOne({ teamId }, { $inc: { points: 100 } });
     return res.status(200).json({ 
       message: "Solution is correct", 
       isCorrect: true, 
