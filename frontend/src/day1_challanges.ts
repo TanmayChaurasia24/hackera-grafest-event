@@ -66,6 +66,8 @@ export const day1_challanges: Challenge[] = [
 
     Heisenberg hide something — a message, a secret — and it's still in there.
     But it's protected, deeply. Only someone who truly thinks like Walter can uncover it.
+    \n\n
+    IP is provided in  the given to you.
      
     `,
     points: 200,
