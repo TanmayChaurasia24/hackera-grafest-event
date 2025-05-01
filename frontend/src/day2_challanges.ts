@@ -28,7 +28,7 @@ export const day2_challanges: Challenge[] = [
     Good hunting.
 
     `,
-    points: 100,
+    points: 400,
     icon: Code,
     difficulty: "Medium",
   },
@@ -67,7 +67,7 @@ export const day2_challanges: Challenge[] = [
     Time is critical. Once the maintenance window closes, any traces of unauthorized access will be swept clean, and security will be reinforced beyond our ability to penetrate.
 
     This is a sensitive operation with significant legal implications. Maintain strict OPSEC and leave no footprint that could be traced back to this agency.`,
-    points: 100,
+    points: 400,
     icon: Code,
     difficulty: "Hard",
   },

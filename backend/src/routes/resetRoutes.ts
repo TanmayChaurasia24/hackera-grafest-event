@@ -73,4 +73,36 @@ router.put("/hash-passwords/:resetId", async (req, res) => {
   }
 });
 
+// Route to trim spaces from teamId
+router.put("/fix-team-ids", async (req, res) => {
+  try {
+    const teams = await Status.find({});
+    console.log(teams);
+    
+
+    const updatePromises = teams.map(async (team) => {
+      console.log("curr team is: ", team.teamId);
+      
+      const trimmedId = team.teamId.trim();
+      console.log("curr team trimmed: ", trimmedId);
+      
+      if (trimmedId !== team.teamId) {
+        team.teamId = trimmedId;
+
+        console.log("updated team is: ", team.teamId);
+        
+        return team.save();
+      }
+    });
+
+    await Promise.all(updatePromises);
+
+    res.status(200).json({ message: "Team IDs trimmed successfully.",
+        Status
+     });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update team IDs." });
+  }
+});
+
 export default router;
