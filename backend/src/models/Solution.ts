@@ -9,6 +9,7 @@ const solutionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  
 });
 
 export const Solution = mongoose.model("Solution", solutionSchema);

@@ -131,7 +131,7 @@ router.post("/submit",submissionslowdown,submissionLimiter,authenticateToken, as
 // Get team points
 router.get("/points", async (req, res) => {
   try {
-    const teams = await Team.find({}, "teamId points").sort({ points: -1 }); // Sort by highest points
+    const teams = await Team.find({}, "teamId points").sort({ points: -1, updatedAt: 1 }); // Sort by highest points
 
     res.json(teams);
   } catch (error) {
